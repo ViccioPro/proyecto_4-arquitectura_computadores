@@ -18,24 +18,6 @@ module pochoco_periph ();
   reg [7:0]  digit_q;
   reg [31:0] cycle_counter;
 
-  // Contador de decimas de segundo.
-  // A 25 MHz: 2.500.000 ciclos = 0,1 segundos.
-  reg [21:0] tenth_divider;
-  reg [15:0] tenth_counter;
-
-  always @(posedge clk_i or negedge rst_ni) begin
-      if (!rst_ni) begin
-          tenth_divider <= 22'd0;
-          tenth_counter <= 16'd0;
-      end else begin
-          if (tenth_divider == TENTH_CYCLES - 1) begin
-              tenth_divider <= 22'd0;
-              tenth_counter <= tenth_counter + 16'd1;
-          end else begin
-              tenth_divider <= tenth_divider + 22'd1;
-          end
-      end
-  end
 
   always @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni)
@@ -95,7 +77,6 @@ module pochoco_periph ();
       case (off)
         6'd2: rdata_o <= {28'b0, btn_i};         // 0x08 Buttons
         6'd3: rdata_o <= cycle_counter;           // 0x0C Cycle counter
-        6'd4: rdata_o <= {16'b0, tenth_counter};  // 0x10 Tenths counter
         default: rdata_o <= 32'b0;
       endcase
     end
