@@ -10,8 +10,7 @@
 
 module pochoco_soc #(
   parameter NumWords   = 512,
-  parameter MemFile    = "../sw/blink.hex",
-  parameter integer TenthCycles = 2500000
+  parameter MemFile    = "../sw/blink.hex"
 ) (
   input  wire       i_Clk,
 
@@ -111,9 +110,7 @@ module pochoco_soc #(
   // Peripherals
   wire [6:0] seg1, seg2;
 
-  pochoco_periph #(
-    .TENTH_CYCLES(TenthCycles)
-  ) u_periph (
+  pochoco_periph u_periph (
     .clk_i     (clk),
     .rst_ni    (rst_ni),
     .sel_i     (per_sel),
