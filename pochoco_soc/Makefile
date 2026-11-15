@@ -12,7 +12,7 @@
 # Configuration
 # ============================================================
 
-TOP := game_top
+TOP := trader_top
 PCF := goboard.pcf
 
 # ============================================================
@@ -20,8 +20,8 @@ PCF := goboard.pcf
 # ============================================================
 
 ASM := assembler_v1.py
-GAME_ASM := sw/game.s
-HEX := sw/game.hex
+GAME_ASM := sw/trade.s
+HEX := sw/trade.hex
 
 # ============================================================
 # RTL Sources
@@ -49,8 +49,8 @@ all: prog
 # Step 0: Generate game.hex from Assembly
 # ============================================================
 
-$(HEX): $(GAME_ASM) $(ASM)
-	python3 $(ASM) $(GAME_ASM) $(HEX)
+$(HEX): $(TRADE_ASM) $(ASM)
+	python3 $(ASM) $(TRADE_ASM) $(HEX)
 
 # ============================================================
 # Step 1: Synthesis using Yosys
