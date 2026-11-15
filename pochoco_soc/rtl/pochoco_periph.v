@@ -8,22 +8,7 @@
 // Authors:
 // - Nicolás Villegas <navillegas@miuandes.cl>
 
-module pochoco_periph #(
-  parameter integer TENTH_CYCLES = 2500000
-) (
-  input  wire        clk_i,
-  input  wire        rst_ni,
-  input  wire        sel_i,
-  input  wire        req_i,
-  input  wire        we_i,
-  input  wire [7:0]  addr_i,
-  input  wire [31:0] wdata_i,
-  output reg  [31:0] rdata_o,
-  output wire [3:0]  leds_o,
-  input  wire [3:0]  btn_i,
-  output wire [6:0]  seg1_o,
-  output wire [6:0]  seg2_o
-);
+module pochoco_periph ();
 
   wire [5:0] off    = addr_i[7:2];
   wire       access = sel_i & req_i;
