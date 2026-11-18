@@ -49,7 +49,7 @@ Info: promoting u_pochoco.por_cnt_SB_LUT4_I3_O_SB_LUT4_I3_O [reset] (fanout 95)
 Info: promoting u_pochoco.u_core.u_ctrl.lsu_busy_i_SB_LUT4_I3_O [cen] (fanout 57)
 Info: Constraining chains...
 Info:        6 LCs used to legalise carry chains.
-Info: Checksum: 0xedb18f19
+Info: Checksum: 0xe2036ead
 
 Info: Device utilisation:
 Info: 	         ICESTORM_LC:     957/   1280    74%
@@ -68,15 +68,15 @@ Info:     at initial placer iter 3, wirelen = 521
 Info: Running main analytical placer, max placement attempts per cell = 125250.
 Info:     at iteration #1, type ALL: wirelen solved = 516, spread = 6332, legal = 7357; time = 0.02s
 Info:     at iteration #2, type ALL: wirelen solved = 537, spread = 6194, legal = 6826; time = 0.02s
-Info:     at iteration #3, type ALL: wirelen solved = 541, spread = 6653, legal = 7390; time = 0.01s
-Info:     at iteration #4, type ALL: wirelen solved = 568, spread = 6156, legal = 6564; time = 0.01s
+Info:     at iteration #3, type ALL: wirelen solved = 541, spread = 6653, legal = 7390; time = 0.02s
+Info:     at iteration #4, type ALL: wirelen solved = 568, spread = 6156, legal = 6564; time = 0.02s
 Info:     at iteration #5, type ALL: wirelen solved = 647, spread = 6091, legal = 6857; time = 0.02s
 Info:     at iteration #6, type ALL: wirelen solved = 883, spread = 6182, legal = 6637; time = 0.02s
 Info:     at iteration #7, type ALL: wirelen solved = 906, spread = 6183, legal = 7110; time = 0.02s
 Info:     at iteration #8, type ALL: wirelen solved = 987, spread = 5857, legal = 7005; time = 0.02s
 Info:     at iteration #9, type ALL: wirelen solved = 988, spread = 6040, legal = 6707; time = 0.02s
-Info: HeAP Placer Time: 0.21s
-Info:   of which solving equations: 0.12s
+Info: HeAP Placer Time: 0.24s
+Info:   of which solving equations: 0.13s
 Info:   of which spreading cells: 0.01s
 Info:   of which strict legalisation: 0.05s
 
@@ -87,7 +87,7 @@ Info:   at iteration #10: temp = 0.000000, timing cost = 555, wirelen = 4848
 Info:   at iteration #15: temp = 0.000000, timing cost = 560, wirelen = 4735
 Info:   at iteration #20: temp = 0.000000, timing cost = 542, wirelen = 4661
 Info:   at iteration #20: temp = 0.000000, timing cost = 541, wirelen = 4661 
-Info: SA placement time 0.53s
+Info: SA placement time 0.60s
 
 Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 45.66 MHz (PASS at 25.00 MHz)
 
@@ -117,25 +117,25 @@ Info: [ 34754,  35795) |****************+
 Info: [ 35795,  36836) |**********************+
 Info: [ 36836,  37877) |************************************************************ 
 Info: [ 37877,  38918) |****************************************+
-Info: Checksum: 0xc83f6c47
+Info: Checksum: 0x44953eec
 
 Info: Routing..
 Info: Setting up routing queue.
 Info: Routing 3368 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      264        735 |  264   735 |      2735|       0.19       0.19|
-Info:       2000 |      632       1367 |  368   632 |      2248|       0.18       0.37|
-Info:       3000 |      932       2011 |  300   644 |      1648|       0.12       0.49|
-Info:       4000 |     1378       2565 |  446   554 |      1275|       0.13       0.62|
-Info:       5000 |     1851       3085 |  473   520 |       969|       0.17       0.79|
-Info:       6000 |     2365       3571 |  514   486 |       733|       0.23       1.02|
-Info:       7000 |     2943       3986 |  578   415 |       544|       0.28       1.31|
-Info:       8000 |     3430       4477 |  487   491 |       219|       0.24       1.54|
-Info:       8440 |     3601       4747 |  171   270 |         0|       0.12       1.66|
+Info:       1000 |      264        735 |  264   735 |      2735|       0.17       0.17|
+Info:       2000 |      632       1367 |  368   632 |      2248|       0.18       0.36|
+Info:       3000 |      932       2011 |  300   644 |      1648|       0.11       0.47|
+Info:       4000 |     1378       2565 |  446   554 |      1275|       0.13       0.60|
+Info:       5000 |     1851       3085 |  473   520 |       969|       0.16       0.76|
+Info:       6000 |     2365       3571 |  514   486 |       733|       0.21       0.97|
+Info:       7000 |     2943       3986 |  578   415 |       544|       0.25       1.21|
+Info:       8000 |     3430       4477 |  487   491 |       219|       0.21       1.42|
+Info:       8440 |     3601       4747 |  171   270 |         0|       0.11       1.53|
 Info: Routing complete.
-Info: Router1 time 1.66s
-Info: Checksum: 0x710aa9ff
+Info: Router1 time 1.53s
+Info: Checksum: 0x71bf00b0
 
 Info: Critical path report for clock 'i_Clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
 Info:       type curr  total name

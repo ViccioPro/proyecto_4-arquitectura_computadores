@@ -50,7 +50,7 @@ Info: promoting u_pochoco.u_ram.mem.0.1_RDATA_1_SB_LUT4_I3_O_SB_LUT4_O_I2_SB_LUT
 Info: promoting u_pochoco.u_core.u_ctrl.lsu_busy_i_SB_LUT4_I2_O [cen] (fanout 57)
 Info: Constraining chains...
 Info:        6 LCs used to legalise carry chains.
-Info: Checksum: 0x27cbb994
+Info: Checksum: 0xc802ee62
 
 Info: Device utilisation:
 Info: 	         ICESTORM_LC:    1098/   1280    85%
@@ -70,12 +70,12 @@ Info: Running main analytical placer, max placement attempts per cell = 163306.
 Info:     at iteration #1, type ALL: wirelen solved = 562, spread = 7506, legal = 8276; time = 0.02s
 Info:     at iteration #2, type ALL: wirelen solved = 637, spread = 7440, legal = 8174; time = 0.02s
 Info:     at iteration #3, type ALL: wirelen solved = 642, spread = 7364, legal = 8173; time = 0.02s
-Info:     at iteration #4, type ALL: wirelen solved = 947, spread = 7279, legal = 8113; time = 0.03s
+Info:     at iteration #4, type ALL: wirelen solved = 947, spread = 7279, legal = 8113; time = 0.02s
 Info:     at iteration #5, type ALL: wirelen solved = 940, spread = 7267, legal = 7814; time = 0.02s
 Info:     at iteration #6, type ALL: wirelen solved = 1004, spread = 7266, legal = 8038; time = 0.02s
-Info:     at iteration #7, type ALL: wirelen solved = 1031, spread = 7200, legal = 8124; time = 0.03s
-Info:     at iteration #8, type ALL: wirelen solved = 1087, spread = 7059, legal = 7754; time = 0.03s
-Info:     at iteration #9, type ALL: wirelen solved = 1207, spread = 7091, legal = 7661; time = 0.03s
+Info:     at iteration #7, type ALL: wirelen solved = 1031, spread = 7200, legal = 8124; time = 0.02s
+Info:     at iteration #8, type ALL: wirelen solved = 1087, spread = 7059, legal = 7754; time = 0.02s
+Info:     at iteration #9, type ALL: wirelen solved = 1207, spread = 7091, legal = 7661; time = 0.02s
 Info:     at iteration #10, type ALL: wirelen solved = 1247, spread = 6857, legal = 7672; time = 0.02s
 Info:     at iteration #11, type ALL: wirelen solved = 1352, spread = 6769, legal = 7238; time = 0.02s
 Info:     at iteration #12, type ALL: wirelen solved = 1418, spread = 6924, legal = 7548; time = 0.02s
@@ -87,10 +87,10 @@ Info:     at iteration #17, type ALL: wirelen solved = 2166, spread = 6627, lega
 Info:     at iteration #18, type ALL: wirelen solved = 2225, spread = 6313, legal = 7204; time = 0.02s
 Info:     at iteration #19, type ALL: wirelen solved = 2316, spread = 6298, legal = 7396; time = 0.02s
 Info:     at iteration #20, type ALL: wirelen solved = 2390, spread = 6320, legal = 7342; time = 0.02s
-Info: HeAP Placer Time: 0.62s
-Info:   of which solving equations: 0.31s
-Info:   of which spreading cells: 0.04s
-Info:   of which strict legalisation: 0.15s
+Info: HeAP Placer Time: 0.51s
+Info:   of which solving equations: 0.25s
+Info:   of which spreading cells: 0.03s
+Info:   of which strict legalisation: 0.13s
 
 Info: Running simulated annealing placer for refinement.
 Info:   at iteration #1: temp = 0.000000, timing cost = 521, wirelen = 6997
@@ -98,7 +98,7 @@ Info:   at iteration #5: temp = 0.000000, timing cost = 461, wirelen = 5822
 Info:   at iteration #10: temp = 0.000000, timing cost = 445, wirelen = 5619
 Info:   at iteration #15: temp = 0.000000, timing cost = 436, wirelen = 5487
 Info:   at iteration #18: temp = 0.000000, timing cost = 441, wirelen = 5453 
-Info: SA placement time 0.65s
+Info: SA placement time 0.55s
 
 Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 43.78 MHz (PASS at 25.00 MHz)
 
@@ -128,26 +128,26 @@ Info: [ 34664,  35758) |**************+
 Info: [ 35758,  36852) |******************************************+
 Info: [ 36852,  37946) |******************************************************+
 Info: [ 37946,  39040) |************************************************************ 
-Info: Checksum: 0x931ec8db
+Info: Checksum: 0x24096662
 
 Info: Routing..
 Info: Setting up routing queue.
 Info: Routing 3884 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      181        818 |  181   818 |      3186|       0.18       0.18|
-Info:       2000 |      582       1417 |  401   599 |      2781|       0.18       0.36|
-Info:       3000 |      804       2139 |  222   722 |      2079|       0.10       0.46|
-Info:       4000 |     1193       2750 |  389   611 |      1659|       0.12       0.58|
-Info:       5000 |     1653       3283 |  460   533 |      1297|       0.18       0.76|
-Info:       6000 |     2206       3726 |  553   443 |      1062|       0.21       0.97|
-Info:       7000 |     2732       4170 |  526   444 |       816|       0.23       1.20|
-Info:       8000 |     3202       4687 |  470   517 |       498|       0.28       1.48|
-Info:       9000 |     3591       5289 |  389   602 |        19|       0.27       1.75|
-Info:       9056 |     3620       5317 |   29    28 |         0|       0.02       1.77|
+Info:       1000 |      181        818 |  181   818 |      3186|       0.17       0.17|
+Info:       2000 |      582       1417 |  401   599 |      2781|       0.17       0.34|
+Info:       3000 |      804       2139 |  222   722 |      2079|       0.10       0.44|
+Info:       4000 |     1193       2750 |  389   611 |      1659|       0.12       0.55|
+Info:       5000 |     1653       3283 |  460   533 |      1297|       0.17       0.73|
+Info:       6000 |     2206       3726 |  553   443 |      1062|       0.22       0.94|
+Info:       7000 |     2732       4170 |  526   444 |       816|       0.23       1.17|
+Info:       8000 |     3202       4687 |  470   517 |       498|       0.24       1.41|
+Info:       9000 |     3591       5289 |  389   602 |        19|       0.25       1.67|
+Info:       9056 |     3620       5317 |   29    28 |         0|       0.02       1.69|
 Info: Routing complete.
-Info: Router1 time 1.77s
-Info: Checksum: 0x1bbc26a1
+Info: Router1 time 1.69s
+Info: Checksum: 0x751d2f3a
 
 Info: Critical path report for clock 'i_Clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
 Info:       type curr  total name

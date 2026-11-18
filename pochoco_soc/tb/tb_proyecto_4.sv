@@ -10,7 +10,7 @@ module tb_proyecto_4;
 
   // Configuración: pueden cambiar estos valores
   localparam string PROGRAMA   = "sw/trade.hex";
-  localparam string SERIE      = "tb/practica.csv";
+  localparam string SERIE      = "tb/practica_meta.csv";
   localparam int    PERIODO_NS = 100000;   // ronda 1: 10000000, ronda 2: 1000000, ronda 3: 100000
   localparam int    NTICKS     = 2000;     // la serie completa tiene 20000
 

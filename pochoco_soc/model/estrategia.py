@@ -2,17 +2,25 @@
 """
 Modelo de referencia del algoritmo - Proyecto 4 (Pochoco Trader)
 
-Estrategia: reversión a la media con banda de desviación estándar.
-  Ventana de N = 64 precios. S = suma, Q = suma de cuadrados.
+Estrategia: reversión a la media con bandas de desviación estándar,
+stop-loss y bloqueo de recompra (pensada para mercados volátiles).
+  Ventana de N = 256 precios. S = suma, Q = suma de cuadrados.
   d   = N*p - S            (N veces la distancia del precio a la media)
   var = N*Q - S^2          (N^2 veces la varianza de la ventana)
-  - Sin acciones: compra 63 si d < 0 y d^2 > K2*var   (p bajo media - 2 sigma)
-  - Con acciones: vende 63 si d > 0                     (p volvió sobre la media)
-  - En otro caso: mantener.
+  Estados: FUERA (sin acciones), DENTRO (con acciones), BLOQUEADO (sin
+  acciones, después de un stop-loss).
+  - FUERA:     compra 63 si d < 0 y d^2 > 2*var    (p < media - 1,41 sigma)
+  - DENTRO:    vende 63 si d > 0 y d^2 > var       (p > media + 1 sigma)
+               vende 63 si d < 0 y d^2 > 16*var    (stop-loss: p < media - 4 sigma)
+                 y pasa a BLOQUEADO
+  - BLOQUEADO: vuelve a FUERA cuando d > 0 (el precio cruzó sobre la media)
   Mientras la ventana no está llena (primeros N-1 precios): mantener.
 
-Todo es aritmética entera de 32 bits sin signo/con signo, igual que trade.s,
-para que las decisiones sean idénticas bit a bit.
+Aritmética entera de 32 bits sin signo, igual que trade.s, para que las
+decisiones sean idénticas bit a bit. Valores máximos: S <= 65280,
+S^2 y N*Q <= 4,26e9 (caben en 32 bits). En assembly, si var >= 2^28 el
+stop-loss no se evalúa (16*var no cabe en 32 bits, y además ya es mayor
+que cualquier d^2 posible, así que la condición sería falsa igual).
 
 Uso:
   python3 estrategia.py practica.csv            # serie completa
@@ -21,8 +29,10 @@ Uso:
 import csv
 import argparse
 
-N = 64
-K2 = 4                  # (2 sigma)^2
+N = 256
+K2_ENTRADA = 2          # (1,41 sigma)^2
+K2_SALIDA = 1           # (1 sigma)^2
+K2_STOP = 16            # (4 sigma)^2
 CAJA0 = 10000
 COMISION = 5
 BUY63 = 0x7F            # 01 111111
@@ -35,40 +45,50 @@ def leer_serie(ruta):
         return [int(r["price"]) for r in csv.DictReader(f)]
 
 
+FUERA, DENTRO, BLOQUEADO = 0, 1, 2
+
+
 class Estrategia:
     """Recibe un precio por tick y devuelve el byte de decisión."""
 
     def __init__(self):
-        self.buf_p = [0] * N
-        self.buf_q = [0] * N
+        self.buf = [0] * N
         self.idx = 0
         self.count = 0
         self.S = 0
         self.Q = 0
-        self.dentro = False
+        self.estado = FUERA
 
     def tick(self, p):
-        p2 = p * p
-        self.S += p - self.buf_p[self.idx]
-        self.Q += p2 - self.buf_q[self.idx]
-        self.buf_p[self.idx] = p
-        self.buf_q[self.idx] = p2
+        viejo = self.buf[self.idx]
+        self.buf[self.idx] = p
+        self.S += p - viejo
+        self.Q += p * p - viejo * viejo
         self.idx = (self.idx + 1) % N
         if self.count < N:
             self.count += 1
             if self.count < N:
                 return HOLD
         d = N * p - self.S
-        if self.dentro:
+        if self.estado == BLOQUEADO:
             if d > 0:
-                self.dentro = False
-                return SELL63
+                self.estado = FUERA
             return HOLD
-        if d >= 0:
+        if d == 0:
             return HOLD
         var = N * self.Q - self.S * self.S
-        if d * d > K2 * var:
-            self.dentro = True
+        if self.estado == DENTRO:
+            if d > 0:
+                if d * d > K2_SALIDA * var:
+                    self.estado = FUERA
+                    return SELL63
+                return HOLD
+            if d * d > K2_STOP * var:
+                self.estado = BLOQUEADO
+                return SELL63
+            return HOLD
+        if d < 0 and d * d > K2_ENTRADA * var:
+            self.estado = DENTRO
             return BUY63
         return HOLD
 
@@ -148,14 +168,14 @@ def main():
     a = ap.parse_args()
     precios = leer_serie(a.serie)[:a.ticks]
     filas = [
-        ("Estrategia (N=64, 2 sigma)", simular(precios, decisiones_estrategia)),
+        ("Estrategia (N=256, bandas+stop)", simular(precios, decisiones_estrategia)),
         ("No operar", simular(precios, referencia_no_operar)),
         ("Comprar y mantener", referencia_comprar_mantener(precios)),
     ]
     print(f"Serie: {a.serie}, {len(precios)} ticks")
-    print(f"{'':28s}{'Patrimonio':>11s}{'Ordenes':>9s}{'Comisiones':>12s}{'Perd. max':>11s}")
+    print(f"{'':32s}{'Patrimonio':>11s}{'Ordenes':>9s}{'Comisiones':>12s}{'Perd. max':>11s}")
     for nombre, r in filas:
-        print(f"{nombre:28s}{r['patrimonio']:11d}{r['ordenes']:9d}"
+        print(f"{nombre:32s}{r['patrimonio']:11d}{r['ordenes']:9d}"
               f"{r['comisiones']:12d}{r['perdida_max']:11d}")
 
 

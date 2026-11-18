@@ -1367,10 +1367,10 @@ Generating RTLIL representation for module `$__ICE40_SPRAM_'.
 Successfully finished Verilog frontend.
 
 17.25.3. Continuing TECHMAP pass.
-Using template $paramod$6d4bcc0bb259a355b4fa2248d12f26a587ed58a7$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
-Using template $paramod$241751200877c6184934c0c9e4fcd19309c2e372$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
-Using template $paramod$a7242f8e4ebde4a02b1c9d640d01a01853105949$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
-Using template $paramod$f62189df09bff05cae543b861098a6fc1640a660$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
+Using template $paramod$8b578face3f4f3c1c0b91570e07805fba4664bd2$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
+Using template $paramod$9a39847fb0d6008cc4b30c8ce0961d6174ccd5b4$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
+Using template $paramod$3b4cd111c3222ef403c8ecbd9a0dac82dd7c2494$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
+Using template $paramod$dd1b5d643de3a5b3b0fdc74b61039d74a024067c$__ICE40_RAM4K_ for cells of type $__ICE40_RAM4K_.
 No more expansions possible.
 <suppressed ~96 debug messages>
 
@@ -2301,10 +2301,10 @@ Module trader_top: replaced 1090 cells with 6244 new cells, skipped 2173 cells.
        3 SB_DFFS_$abc9_byp
        8 SB_DFFR_$abc9_byp
      166 SB_DFFER_$abc9_byp
-       2 $paramod$44756fd890a12613157c89682dc4211387c11394\SB_RAM40_4K
-       2 $paramod$1ed61fcd0a280460fe376a116617b440c0c2ac18\SB_RAM40_4K
-       2 $paramod$24338112c06a12f567f5fe46c6ccd4f76bcfb4a3\SB_RAM40_4K
-       2 $paramod$59266e369c779b5cfb41524fe2abd580e1e97d60\SB_RAM40_4K
+       2 $paramod$aa092197588f1f276a3e9dc293b00fc7413f7331\SB_RAM40_4K
+       2 $paramod$11047ec35b6ab2a52c4f767bb85848285492461b\SB_RAM40_4K
+       2 $paramod$32043fd689c14a644e83d2f1e0b193349716300e\SB_RAM40_4K
+       2 $paramod$9fea95f015c6ec1684f3f8de53c2f55b46a3d3eb\SB_RAM40_4K
        4 $paramod$23dd8c799cf8365f3c773ea1006e20f1d608155f\SB_RAM40_4K
      140 $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1
 
@@ -2345,7 +2345,7 @@ ABC: P:  Del = 11854.00.  Ar =     935.0.  Edge =     2900.  Cut =    22349.  T 
 ABC: F:  Del = 11854.00.  Ar =     838.0.  Edge =     2744.  Cut =    21184.  T =     0.00 sec
 ABC: A:  Del = 11854.00.  Ar =     825.0.  Edge =     2590.  Cut =    22114.  T =     0.01 sec
 ABC: A:  Del = 11854.00.  Ar =     818.0.  Edge =     2579.  Cut =    22172.  T =     0.01 sec
-ABC: Total time =     0.03 sec
+ABC: Total time =     0.02 sec
 ABC: + &write -n <abc-temp-dir>/output.aig 
 ABC: + &mfs 
 ABC: + &ps -l 
@@ -2357,7 +2357,7 @@ ABC: + &write -n <abc-temp-dir>/output.aig
 ABC: + &verify 
 ABC: Networks are equivalent.  Time =     0.08 sec
 ABC: + time 
-ABC: elapse: 0.74 seconds, total: 0.74 seconds
+ABC: elapse: 0.70 seconds, total: 0.70 seconds
 
 17.41.18.6. Executing AIGER frontend.
 <suppressed ~2951 debug messages>
@@ -2384,12 +2384,12 @@ Successfully finished Verilog frontend.
 17.41.19.2. Continuing TECHMAP pass.
 Using template SB_DFFER_$abc9_byp for cells of type SB_DFFER_$abc9_byp.
 Using template $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1 for cells of type $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1.
-Using template $paramod$44756fd890a12613157c89682dc4211387c11394\SB_RAM40_4K for cells of type $paramod$44756fd890a12613157c89682dc4211387c11394\SB_RAM40_4K.
-Using template $paramod$1ed61fcd0a280460fe376a116617b440c0c2ac18\SB_RAM40_4K for cells of type $paramod$1ed61fcd0a280460fe376a116617b440c0c2ac18\SB_RAM40_4K.
-Using template $paramod$24338112c06a12f567f5fe46c6ccd4f76bcfb4a3\SB_RAM40_4K for cells of type $paramod$24338112c06a12f567f5fe46c6ccd4f76bcfb4a3\SB_RAM40_4K.
+Using template $paramod$aa092197588f1f276a3e9dc293b00fc7413f7331\SB_RAM40_4K for cells of type $paramod$aa092197588f1f276a3e9dc293b00fc7413f7331\SB_RAM40_4K.
+Using template $paramod$11047ec35b6ab2a52c4f767bb85848285492461b\SB_RAM40_4K for cells of type $paramod$11047ec35b6ab2a52c4f767bb85848285492461b\SB_RAM40_4K.
+Using template $paramod$32043fd689c14a644e83d2f1e0b193349716300e\SB_RAM40_4K for cells of type $paramod$32043fd689c14a644e83d2f1e0b193349716300e\SB_RAM40_4K.
 Using template SB_DFFR_$abc9_byp for cells of type SB_DFFR_$abc9_byp.
 Using template SB_DFFS_$abc9_byp for cells of type SB_DFFS_$abc9_byp.
-Using template $paramod$59266e369c779b5cfb41524fe2abd580e1e97d60\SB_RAM40_4K for cells of type $paramod$59266e369c779b5cfb41524fe2abd580e1e97d60\SB_RAM40_4K.
+Using template $paramod$9fea95f015c6ec1684f3f8de53c2f55b46a3d3eb\SB_RAM40_4K for cells of type $paramod$9fea95f015c6ec1684f3f8de53c2f55b46a3d3eb\SB_RAM40_4K.
 Using template $paramod$23dd8c799cf8365f3c773ea1006e20f1d608155f\SB_RAM40_4K for cells of type $paramod$23dd8c799cf8365f3c773ea1006e20f1d608155f\SB_RAM40_4K.
 No more expansions possible.
 <suppressed ~343 debug messages>
@@ -2715,6 +2715,6 @@ Found and reported 0 problems.
       938   SB_LUT4
        12   SB_RAM40_4K
 
-End of script. Logfile hash: 772d6c2ca5, CPU: user 2.77s system 0.03s, MEM: 61.41 MB peak
+End of script. Logfile hash: c2fe1df204, CPU: user 2.67s system 0.03s, MEM: 61.56 MB peak
 Yosys 0.63+87 (git sha1 2f1cdc2df, clang++ 18.1.8 -fPIC -O3)
-Time spent: 39% 11x techmap (1 sec), 21% 1x abc9_exe (0 sec), ...
+Time spent: 40% 11x techmap (1 sec), 21% 1x abc9_exe (0 sec), ...
