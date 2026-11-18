@@ -25,6 +25,7 @@
 #   sp = precios recibidos, satura en 64
 #   a5 = 1 si se tienen acciones, 0 si no
 #   a3 = precio actual p,  a4 = d
+#   t2 = base de los displays (fijo)
 #   a0, a2 = |d| y productos;  t0, t1 = temporales
 #
 # Memoria: dos buffers de 64 palabras al final del programa
@@ -37,6 +38,7 @@
 .equ IDX_MASK, 255             # N*4 - 1 (indice circular en bytes)
 .equ BUY63,    0x7F            # 01 111111 -> comprar 63
 .equ SELL63,   0xBF            # 10 111111 -> vender 63
+.equ PER_BASE, 0x80000000      # +0 displays (precio en hexadecimal)
 
 _start:
     li   s0, SPI_BASE
@@ -45,6 +47,7 @@ _start:
     li   tp, 0
     li   sp, 0
     li   a5, 0
+    li   t2, PER_BASE          # t2 queda fijo con la base de los displays
 
 # ---------------- 1. Esperar precio ----------------
 esperar:
@@ -52,6 +55,7 @@ esperar:
     andi t0, t0, 1
     beqz t0, esperar
     lw   a3, 4(s0)             # p (leerlo borra el flag)
+    sw   a3, 0(t2)             # mostrar el precio en los displays (depuracion en placa)
 
 # ---------------- 2. Actualizar ventana ----------------
     mulc a2, a3, a3            # a2 = p^2

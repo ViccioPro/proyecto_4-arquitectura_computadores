@@ -1,0 +1,16 @@
+# direccion  palabra   linea  fuente
+0x00000000  80010437     15  li   s0, SPI_BASE
+0x00000004  800004b7     16  li   s1, PER_BASE
+0x00000008  00042283     19  lw   t0, 0(s0)             # status: bit0 = precio nuevo
+0x0000000c  0012f293     20  andi t0, t0, 1
+0x00000010  fe028ce3     21  beqz t0, esperar_precio
+0x00000014  00442503     23  lw   a0, 4(s0)             # leer precio (borra el flag)
+0x00000018  00042423     24  sw   zero, 8(s0)           # DECISION = 00 (mantener)
+0x0000001c  00a4a023     25  sw   a0, 0(s1)             # mostrar precio en hexadecimal
+0x00000020  fe9ff06f     26  j    esperar_precio
+
+# Simbolos
+# _start                   = 0x00000000 (0)
+# esperar_precio           = 0x00000008 (8)
+# PER_BASE                 = 0x80000000 (2147483648)
+# SPI_BASE                 = 0x80010000 (2147549184)
