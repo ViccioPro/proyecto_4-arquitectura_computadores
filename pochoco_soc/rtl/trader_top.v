@@ -1,3 +1,4 @@
+// trader_top: top-level de la placa para el Proyecto 4 (Pochoco Trader)
 module trader_top (
     input  wire       i_Clk,
 
@@ -37,10 +38,39 @@ module trader_top (
     // UART no se utiliza en este proyecto
     assign o_UART_TX = 1'b1;
 
+    // --------------------------------------------------------
+    // Reloj del sistema
+    //   USE_PLL = 0 : reloj directo de la placa (25 MHz)
+    //   USE_PLL = 1 : reloj generado por el PLL (rtl/pll.v,
+    //                 creado con icepll; frecuencia indicada ahí)
+    // El testbench del curso instancia pochoco_soc directamente,
+    // por lo que este cambio no afecta a la simulación.
+    // --------------------------------------------------------
+    // La HX1K en encapsulado VQ100 (Go Board) no tiene PLL: nextpnr no
+    // encuentra donde ubicarlo. Por eso el valor por defecto es 0.
+    parameter USE_PLL = 0;
+
+    wire clk_sys;
+
+    generate
+        if (USE_PLL) begin : g_pll
+            wire pll_locked;   // no se usa: el reset de encendido de
+                               // pochoco_soc (65535 ciclos) dura mucho
+                               // más que el enganche del PLL
+            pll u_pll (
+                .clock_in  (i_Clk),
+                .clock_out (clk_sys),
+                .locked    (pll_locked)
+            );
+        end else begin : g_sin_pll
+            assign clk_sys = i_Clk;
+        end
+    endgenerate
+
     pochoco_soc #(
         .MemFile("sw/trade.hex")
     ) u_pochoco (
-        .i_Clk(i_Clk),
+        .i_Clk(clk_sys),
 
         .o_LED(o_LED),
         .i_Switch(i_Switch),

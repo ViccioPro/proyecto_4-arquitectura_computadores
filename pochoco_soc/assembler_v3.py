@@ -109,9 +109,10 @@ INSTR_TABLE = {
 # Instrucciones propias (espacio custom-0, opcode 0x0B).
 # Para agregar una, poner una entrada con el mismo formato de INSTR_TABLE.
 # Formatos soportados: "R" (rd, rs1, rs2) e "I" (rd, rs1, imm).
-# Ejemplo (descomentar cuando exista el hardware):
-#   "mac": ("R", OPCODE_CUSTOM0, 0b000, 0b0000000),
 CUSTOM_INSTRUCTIONS = {
+    # mulc rd, rs1, rs2 : rd = (rs1 * rs2) mod 2^32, con rs2 < 2^16
+    # Requiere el hardware con MUL_MODE = 1 (multiplicador en espino_core).
+    "mulc": ("R", OPCODE_CUSTOM0, 0b000, 0b0000000),
 }
 
 INSTR_TABLE.update(CUSTOM_INSTRUCTIONS)

@@ -9,7 +9,10 @@
 // - Nicolás Villegas <navillegas@miuandes.cl>
 
 module espino_core #(
-  parameter [31:0] BootAddr = 32'h0000_0000
+  parameter [31:0] BootAddr = 32'h0000_0000,
+  parameter integer PcWidth = 32,         // [Proyecto 4]
+  parameter integer MulEnable = 0,        // [Proyecto 4] 1 = instrucción custom-0 mulc
+  parameter integer MulRadix  = 1         // [Proyecto 4] bits por ciclo del multiplicador
 ) (
   input  wire        clk_i,
   input  wire        rst_ni,
@@ -46,7 +49,11 @@ module espino_core #(
 
   wire        illegal_insn;
 
-  espino_if_stage #(.BootAddr(BootAddr)) u_if (
+  // [Proyecto 4] multiplicador custom-0
+  wire        mul_req, mul_stall;
+  wire [31:0] mul_a, mul_b, mul_result;
+
+  espino_if_stage #(.BootAddr(BootAddr), .PcWidth(PcWidth)) u_if (
     .clk_i            (clk_i),
     .rst_ni           (rst_ni),
     .pc_set_i         (pc_set),
@@ -58,7 +65,7 @@ module espino_core #(
     .instr_valid_id_o (instr_valid_id)
   );
 
-  espino_id_stage u_id (
+  espino_id_stage #(.PcWidth(PcWidth)) u_id (
     .clk_i          (clk_i),
     .rst_ni         (rst_ni),
     .instr_valid_i  (instr_valid_id),
@@ -83,6 +90,10 @@ module espino_core #(
     .jump_o         (jump),
     .pc_target_o    (pc_target),
     .rf_ready_o     (rf_ready),
+    .mul_req_o      (mul_req),
+    .mul_a_o        (mul_a),
+    .mul_b_o        (mul_b),
+    .mul_result_i   (mul_result),
     .illegal_insn_o (illegal_insn)
   );
 
@@ -123,8 +134,33 @@ module espino_core #(
     .branch_taken_i (branch_taken),
     .jump_i         (jump),
     .lsu_busy_i     (lsu_busy),
+    .mul_stall_i    (mul_stall),
     .pc_set_o       (pc_set),
     .stall_o        (stall)
   );
+
+  // [Proyecto 4] Multiplicador de la instrucción mulc.
+  // Mientras la instrucción está en ID: el primer ciclo con operandos
+  // listos arranca el multiplicador, el core queda detenido mientras
+  // multiplica, y en el ciclo de done la instrucción escribe rd.
+  generate
+    if (MulEnable) begin : g_mul
+      wire mul_busy, mul_done;
+      assign mul_stall = mul_req & ~mul_done;
+      pochoco_mul #(.RADIX(MulRadix)) u_mul (
+        .clk_i   (clk_i),
+        .rst_ni  (rst_ni),
+        .start_i (mul_req & ~mul_busy & ~mul_done),
+        .a_i     (mul_a),
+        .b_i     (mul_b),
+        .busy_o  (mul_busy),
+        .done_o  (mul_done),
+        .p_o     (mul_result)
+      );
+    end else begin : g_sin_mul
+      assign mul_stall  = 1'b0;    // sin multiplicador: mulc escribe 0
+      assign mul_result = 32'b0;
+    end
+  endgenerate
 
 endmodule

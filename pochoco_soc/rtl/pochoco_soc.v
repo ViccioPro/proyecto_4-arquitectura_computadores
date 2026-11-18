@@ -8,9 +8,25 @@
 // Authors:
 // - Nicolás Villegas <navillegas@miuandes.cl>
 
+// [Proyecto 4] Variante del multiplicador, elegida al compilar:
+//   MUL_MODE 0 = solo software, 1 = instrucción custom-0 (mulc),
+//   2 = periférico MMIO en 0x8002_0000.   MUL_RADIX = bits por ciclo.
+// Ejemplo: iverilog -DMUL_MODE=1 ...   /   yosys: read_verilog -DMUL_MODE=1 ...
+`ifndef MUL_MODE
+`define MUL_MODE 0
+`endif
+`ifndef MUL_RADIX
+`define MUL_RADIX 1
+`endif
+
 module pochoco_soc #(
   parameter NumWords   = 512,
-  parameter MemFile    = "../sw/blink.hex"
+  parameter MemFile    = "../sw/blink.hex",
+  // [Proyecto 4] 1 = contador de ciclos en 0x8000_000C (para medir en la placa)
+  //              0 = sin contador (ahorra celdas lógicas; lee 0)
+  parameter CycleCounter = 0,
+  parameter MulMode      = `MUL_MODE,
+  parameter MulRadix     = `MUL_RADIX
 ) (
   input  wire       i_Clk,
 
@@ -55,7 +71,13 @@ module pochoco_soc #(
   wire [3:0]  data_be;
   wire [31:0] data_addr, data_wdata, data_rdata;
 
-  espino_core #(.BootAddr(32'h0000_0000)) u_core (
+  // [Proyecto 4] PC de $clog2(NumWords)+2 bits (11 bits para 2 KB de RAM)
+  espino_core #(
+    .BootAddr (32'h0000_0000),
+    .PcWidth  ($clog2(NumWords) + 2),
+    .MulEnable(MulMode == 1),
+    .MulRadix (MulRadix)
+  ) u_core (
     .clk_i         (clk),
     .rst_ni        (rst_ni),
     .instr_req_o   (instr_req),
@@ -69,30 +91,36 @@ module pochoco_soc #(
     .data_rdata_i  (data_rdata)
   );
 
-  wire is_mmio, spi_sel, per_sel;
+  wire is_mmio, spi_sel, per_sel, mul_sel;
   assign is_mmio = data_addr[31];
-  assign per_sel = is_mmio & ~data_addr[16];
+  // [Proyecto 4] 0x8002_xxxx = multiplicador MMIO (solo con MulMode = 2)
+  assign mul_sel = (MulMode == 2) ? (is_mmio & data_addr[17]) : 1'b0;
+  assign per_sel = is_mmio & ~data_addr[16] & ~mul_sel;
   assign spi_sel = is_mmio &  data_addr[16];
 
-  wire ram_b_req, per_req, spi_req;
+  wire ram_b_req, per_req, spi_req, mul_req;
   assign ram_b_req = data_req & ~is_mmio;
   assign per_req   = data_req &  per_sel;
   assign spi_req   = data_req &  spi_sel;
+  assign mul_req   = data_req &  mul_sel;
 
-  wire [31:0] ram_b_rdata, per_rdata, spi_rdata;
+  wire [31:0] ram_b_rdata, per_rdata, spi_rdata, mul_rdata;
 
-  reg rd_is_per, rd_is_spi;
+  reg rd_is_per, rd_is_spi, rd_is_mul;
   always @(posedge clk or negedge rst_ni) begin
     if (!rst_ni) begin
       rd_is_per <= 1'b0;
       rd_is_spi <= 1'b0;
+      rd_is_mul <= 1'b0;
     end else if (data_req & ~data_we) begin
       rd_is_per <= per_sel;
       rd_is_spi <= spi_sel;
+      rd_is_mul <= mul_sel;
     end
   end
   assign data_rdata = rd_is_per ? per_rdata :
-                      rd_is_spi ? spi_rdata : ram_b_rdata;
+                      rd_is_spi ? spi_rdata :
+                      rd_is_mul ? mul_rdata : ram_b_rdata;
 
   pochoco_ram #(.NumWords(NumWords), .MemFile(MemFile)) u_ram (
     .clk_i     (clk),
@@ -110,7 +138,7 @@ module pochoco_soc #(
   // Peripherals
   wire [6:0] seg1, seg2;
 
-  pochoco_periph u_periph (
+  pochoco_periph #(.CYCLE_COUNTER(CycleCounter)) u_periph (
     .clk_i     (clk),
     .rst_ni    (rst_ni),
     .sel_i     (per_sel),
@@ -140,6 +168,24 @@ module pochoco_soc #(
     .spi_cs_n_i (i_SPI_CS_n),
     .spi_miso_o (o_SPI_MISO)
   );
+
+  // [Proyecto 4] Multiplicador MMIO
+  generate
+    if (MulMode == 2) begin : g_mul_mmio
+      pochoco_mul_mmio #(.RADIX(MulRadix)) u_mul (
+        .clk_i   (clk),
+        .rst_ni  (rst_ni),
+        .sel_i   (mul_sel),
+        .req_i   (mul_req),
+        .we_i    (data_we),
+        .addr_i  (data_addr[7:0]),
+        .wdata_i (data_wdata),
+        .rdata_o (mul_rdata)
+      );
+    end else begin : g_sin_mul_mmio
+      assign mul_rdata = 32'b0;
+    end
+  endgenerate
 
   // 7-seg is active-low on the board
   assign {o_Segment1_G, o_Segment1_F, o_Segment1_E, o_Segment1_D,

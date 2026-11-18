@@ -16,6 +16,7 @@ module espino_controller (
 
   input  wire lsu_busy_i,
   input  wire rf_ready_i,
+  input  wire mul_stall_i,   // [Proyecto 4] multiplicador ocupado
 
   output wire pc_set_o,
   output wire stall_o
@@ -23,7 +24,7 @@ module espino_controller (
 
   wire rf_wait = instr_valid_i & ~rf_ready_i;
 
-  assign stall_o  = rf_wait | lsu_busy_i;
+  assign stall_o  = rf_wait | lsu_busy_i | mul_stall_i;
 
   assign pc_set_o = instr_valid_i & rf_ready_i
                     & ~lsu_busy_i

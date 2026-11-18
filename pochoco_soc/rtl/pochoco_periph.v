@@ -7,8 +7,13 @@
 // 
 // Authors:
 // - Nicolás Villegas <navillegas@miuandes.cl>
+//
+// [Proyecto 4] Se eliminó el contador de décimas (Proyecto 2) y el
+// contador de ciclos quedó opcional (parámetro CYCLE_COUNTER).
 
-module pochoco_periph (
+module pochoco_periph #(
+  parameter CYCLE_COUNTER = 0      // 1 = contador de ciclos en offset 0x0C
+) (
   input  wire        clk_i,
   input  wire        rst_ni,
   input  wire        sel_i,
@@ -22,23 +27,30 @@ module pochoco_periph (
   output wire [6:0]  seg1_o,
   output wire [6:0]  seg2_o
 );
-  
+
   wire [5:0] off    = addr_i[7:2];
   wire       access = sel_i & req_i;
 
-  // LEDs, displays y contador de ciclos
+  // LEDs y displays
   reg [3:0]  led_q;
   reg [7:0]  digit_q;
-  reg [31:0] cycle_counter;
 
+  // Contador de ciclos (opcional)
+  wire [31:0] cycle_counter;
 
-  always @(posedge clk_i or negedge rst_ni) begin
-    if (!rst_ni)
-      cycle_counter <= 32'b0;
-    else
-      cycle_counter <= cycle_counter + 1;
-  end
-  
+  generate
+    if (CYCLE_COUNTER) begin : g_cycle_counter
+      reg [31:0] cycle_q;
+      always @(posedge clk_i or negedge rst_ni) begin
+        if (!rst_ni) cycle_q <= 32'b0;
+        else         cycle_q <= cycle_q + 32'd1;
+      end
+      assign cycle_counter = cycle_q;
+    end else begin : g_sin_cycle_counter
+      assign cycle_counter = 32'b0;
+    end
+  endgenerate
+
   always @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       led_q   <= 4'b0;
@@ -89,7 +101,7 @@ module pochoco_periph (
     else if (access & ~we_i) begin
       case (off)
         6'd2: rdata_o <= {28'b0, btn_i};         // 0x08 Buttons
-        6'd3: rdata_o <= cycle_counter;           // 0x0C Cycle counter
+        6'd3: rdata_o <= cycle_counter;           // 0x0C Cycle counter (0 si no existe)
         default: rdata_o <= 32'b0;
       endcase
     end

@@ -11,6 +11,7 @@ En la placa real esto no ocurre: la FPGA ya está encendida al empezar la ronda.
 
 Uso (desde pochoco_soc/):
   python3 model/verificar.py decisiones.csv --periodo-ns 100000
+  python3 model/verificar.py decisiones.csv --periodo-ns 100000 --clk-mhz 40.625
 """
 import argparse
 import csv
@@ -20,14 +21,15 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from estrategia import Estrategia, Mercado, HOLD  # noqa: E402
 
-T_RESET_NS = 20 + 40 * (65535 - 1)   # flanco en que por_cnt llega a 0xFFFF
 T_INICIO_NS = 4000                   # espera inicial del testbench
 T_PRIMER_SCLK_NS = 1500              # desde que baja CS hasta el primer flanco de SCLK
 
 
-def primer_tick_visto(periodo_ns):
+def primer_tick_visto(periodo_ns, clk_mhz=25.0):
+    t_clk = 1000.0 / clk_mhz
+    t_reset_ns = t_clk / 2 + t_clk * (65535 - 1)   # flanco en que por_cnt llega a 0xFFFF
     n = 0
-    while T_INICIO_NS + n * periodo_ns + T_PRIMER_SCLK_NS <= T_RESET_NS + 200:
+    while T_INICIO_NS + n * periodo_ns + T_PRIMER_SCLK_NS <= t_reset_ns + 200:
         n += 1
     return n
 
@@ -47,6 +49,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("decisiones", help="decisiones.csv generado por tb_proyecto_4")
     ap.add_argument("--periodo-ns", type=int, default=100000)
+    ap.add_argument("--clk-mhz", type=float, default=25.0,
+                    help="frecuencia del reloj en la simulación (25 o la del PLL)")
     a = ap.parse_args()
 
     with open(a.decisiones) as f:
@@ -54,7 +58,7 @@ def main():
     precios = [int(r["precio"]) for r in filas]
     rtl = [int(r["decision"], 16) for r in filas]
 
-    inicio = primer_tick_visto(a.periodo_ns)
+    inicio = primer_tick_visto(a.periodo_ns, a.clk_mhz)
     esp = decisiones_esperadas(precios, inicio)
 
     m = Mercado()

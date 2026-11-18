@@ -33,7 +33,10 @@ module espino_decoder (
   output reg         lsu_req_o,
   output reg         lsu_we_o,
   output reg  [1:0]  lsu_type_o,
-  output reg         lsu_sign_o
+  output reg         lsu_sign_o,
+
+  // [Proyecto 4] instrucción custom-0 "mulc rd, rs1, rs2"
+  output reg         is_mul_o
 );
 
   // --- Local Parameters ---
@@ -50,6 +53,7 @@ module espino_decoder (
     OPCODE_BRANCH = 7'h63,
     OPCODE_JALR   = 7'h67,
     OPCODE_JAL    = 7'h6f,
+    OPCODE_CUSTOM0 = 7'h0b,   // [Proyecto 4]
     OPCODE_SYSTEM = 7'h73;
 
   // ALU operations
@@ -76,7 +80,7 @@ module espino_decoder (
   localparam       OP_B_REG  = 1'b0, OP_B_IMM  = 1'b1;
 
   // Writeback data source
-  localparam [1:0] WD_ALU = 2'd0, WD_LSU = 2'd1, WD_PC4 = 2'd2;
+  localparam [1:0] WD_ALU = 2'd0, WD_LSU = 2'd1, WD_PC4 = 2'd2, WD_MUL = 2'd3;
 
   // LSU transfer size
   localparam [1:0] LSU_BYTE = 2'd0, LSU_HALF = 2'd1, LSU_WORD = 2'd2;
@@ -115,8 +119,22 @@ module espino_decoder (
     lsu_we_o       = 1'b0;
     lsu_type_o     = LSU_WORD;
     lsu_sign_o     = 1'b1;
+    is_mul_o       = 1'b0;
 
     case (opcode)
+
+      // [Proyecto 4] mulc rd, rs1, rs2  (opcode 0x0B, funct3 = 0, funct7 = 0)
+      // rd = (rs1 * rs2) mod 2^32, con rs2 < 2^16. Usa el multiplicador
+      // secuencial (pochoco_mul); el core se detiene hasta que termina.
+      OPCODE_CUSTOM0: begin
+        if (funct3 == 3'b000 && funct7 == 7'b0) begin
+          rf_we_o     = 1'b1;
+          rf_wd_sel_o = WD_MUL;
+          is_mul_o    = 1'b1;
+        end else begin
+          illegal_insn_o = 1'b1;
+        end
+      end
 
       OPCODE_LUI: begin
         alu_op_a_sel_o = OP_A_ZERO;   // rd = 0 + immU

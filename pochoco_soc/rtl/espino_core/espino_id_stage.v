@@ -8,7 +8,10 @@
 // Authors:
 // - Nicolás Villegas <navillegas@miuandes.cl>
 
-module espino_id_stage (
+module espino_id_stage #(
+  // [Proyecto 4] bits del PC; 32 = comportamiento original
+  parameter integer PcWidth = 32
+) (
   input  wire        clk_i,
   input  wire        rst_ni,
 
@@ -43,6 +46,12 @@ module espino_id_stage (
   // Sync-read handshake to controller
   output wire        rf_ready_o,
 
+  // [Proyecto 4] multiplicador (instrucción custom-0)
+  output wire        mul_req_o,
+  output wire [31:0] mul_a_o,
+  output wire [31:0] mul_b_o,
+  input  wire [31:0] mul_result_i,
+
   output wire        illegal_insn_o
 );
 
@@ -51,6 +60,7 @@ module espino_id_stage (
   localparam       OP_B_IMM  = 1'b1;
   localparam [1:0] WD_LSU    = 2'd1;
   localparam [1:0] WD_PC4    = 2'd2;
+  localparam [1:0] WD_MUL    = 2'd3;   // [Proyecto 4]
 
   // Register addresses
   assign rf_raddr_a_o = instr_rdata_i[18:15];
@@ -78,6 +88,7 @@ module espino_id_stage (
   wire        lsu_req_dec, lsu_we_dec;
   wire [1:0]  lsu_type_dec;
   wire        lsu_sign_dec;
+  wire        is_mul;
 
   espino_decoder u_decoder (
     .instr_i        (instr_rdata_i),
@@ -95,7 +106,8 @@ module espino_id_stage (
     .lsu_req_o      (lsu_req_dec),
     .lsu_we_o       (lsu_we_dec),
     .lsu_type_o     (lsu_type_dec),
-    .lsu_sign_o     (lsu_sign_dec)
+    .lsu_sign_o     (lsu_sign_dec),
+    .is_mul_o       (is_mul)
   );
 
   // Operand muxes
@@ -128,18 +140,29 @@ module espino_id_stage (
   assign lsu_addr_o  = alu_result;
   assign lsu_wdata_o = rf_rdata_b_i;
 
+  // [Proyecto 4] multiplicador: operandos directos del banco de registros
+  assign mul_req_o = is_mul & instr_valid_i & ops_valid_q;
+  assign mul_a_o   = rf_rdata_a_i;
+  assign mul_b_o   = rf_rdata_b_i;
+
+  // [Proyecto 4] destino de salto y PC+4 calculados con PcWidth bits
+  wire [PcWidth-1:0] pc_short   = pc_id_i[PcWidth-1:0];
+  wire [PcWidth-1:0] pc_branch  = pc_short + imm_target[PcWidth-1:0];
+  wire [PcWidth-1:0] pc_plus4   = pc_short + 3'd4;
+
   // Control transfer
   assign branch_taken_o = is_branch & alu_cmp_result;
   assign jump_o         = is_jal | is_jalr;
   assign pc_target_o    = is_jalr ? (alu_result & ~32'h1)
-                                  : (pc_id_i + imm_target);
+                                  : pc_branch;  // se extiende con ceros
 
   wire commit = instr_valid_i & ~stall_i;
 
   always @* begin
     case (rf_wd_sel)
       WD_LSU:  rf_wdata_o = lsu_rdata_i;
-      WD_PC4:  rf_wdata_o = pc_id_i + 32'd4;
+      WD_PC4:  rf_wdata_o = pc_plus4;   // se extiende con ceros
+      WD_MUL:  rf_wdata_o = mul_result_i;
       default: rf_wdata_o = alu_result;
     endcase
   end

@@ -12,9 +12,13 @@ MMIO simulado:
   0x8001_0000 status {cs, precio_nuevo}   0x8001_0004 precio (lee y borra flag)
   0x8001_0008 DECISION (escritura)        0x8000_0000/04 displays/LEDs
   0x8000_0008 botones (0)                 0x8000_000C contador de ciclos
+  0x8002_0000 multiplicador MMIO (MUL_MODE = 2): +0 A / estado, +4 B, +8 producto
+
+Instrucción custom-0 "mulc" (MUL_MODE = 1): rd = rs1*rs2 mod 2^32.
+  Ciclos: m + 3, con m = max(1, ceil(bits(rs2) / radix)).
 
 Uso:
-  python3 espino_iss.py ../sw/trade.hex practica.csv [--ticks 2000] [--csv salida.csv]
+  python3 espino_iss.py ../sw/trade.hex practica.csv [--ticks 2000] [--csv salida.csv] [--radix 1]
 Entrega, por tick: decisión, instrucciones (IC), ciclos y CPI desde que llega
 el precio hasta que se escribe DECISION.
 """
@@ -33,7 +37,12 @@ def sx(v, bits):
 
 
 class Espino:
-    def __init__(self, hex_path):
+    def __init__(self, hex_path, radix=1):
+        self.radix = radix
+        self.mul_a = 0
+        self.mul_p = 0
+        self.mul_inicio = -1      # ciclo en que el multiplicador MMIO empieza
+        self.mul_m = 0
         self.mem = [0] * RAM_WORDS
         with open(hex_path) as f:
             for i, line in enumerate(l for l in f if l.strip()):
@@ -49,6 +58,11 @@ class Espino:
         self.decision_writes = []    # (ciclo, valor, instret)
         self.display = 0
 
+    def mul_ciclos(self, b):
+        """Iteraciones del multiplicador secuencial (terminación temprana)."""
+        bits = (b & 0xFFFF).bit_length()
+        return max(1, -(-bits // self.radix))
+
     # ---------------- memoria ----------------
     def _arrive(self):
         if self.pending and self.cycle >= self.pending[0]:
@@ -58,6 +72,14 @@ class Espino:
 
     def load_word(self, addr):
         self._arrive()
+        if addr & 0x80000000 and addr & 0x20000:          # multiplicador MMIO
+            off = addr & 0xFF
+            if off == 0x00:
+                t = self.cycle + 1                         # ciclo en que se muestrea
+                return int(self.mul_inicio <= t < self.mul_inicio + self.mul_m)
+            if off == 0x08:
+                return self.mul_p
+            return 0
         if addr & 0x80000000:
             if addr & 0x10000:
                 off = addr & 0xFF
@@ -76,6 +98,15 @@ class Espino:
         return self.mem[(addr >> 2) % RAM_WORDS]
 
     def store(self, addr, val, be_mask):
+        if addr & 0x80000000 and addr & 0x20000:          # multiplicador MMIO
+            off = addr & 0xFF
+            if off == 0x00:
+                self.mul_a = val
+            elif off == 0x04:
+                self.mul_p = (self.mul_a * (val & 0xFFFF)) & 0xFFFFFFFF
+                self.mul_inicio = self.cycle + 2
+                self.mul_m = self.mul_ciclos(val)
+            return
         if addr & 0x80000000:
             if addr & 0x10000:
                 if (addr & 0xFF) == 0x08:
@@ -168,6 +199,9 @@ class Espino:
             res = self.pc + 4
             next_pc = self.pc + j_imm
             cycles += 1
+        elif op == 0x0B and f3 == 0 and f7 == 0:   # custom-0: mulc
+            res = (a * (b & 0xFFFF)) & 0xFFFFFFFF
+            cycles += self.mul_ciclos(b) + 1
         elif op == 0x67:                     # JALR
             res = self.pc + 4
             next_pc = (a + i_imm) & ~1
@@ -182,9 +216,9 @@ class Espino:
         self.instret += 1
 
 
-def correr(hex_path, precios, max_ciclos_por_tick=200000):
+def correr(hex_path, precios, max_ciclos_por_tick=200000, radix=1):
     """Entrega una lista de (decision, IC, ciclos) por precio."""
-    cpu = Espino(hex_path)
+    cpu = Espino(hex_path, radix)
     # dejar que el programa inicialice y llegue al bucle de espera
     for _ in range(1000):
         cpu.step()
@@ -213,9 +247,11 @@ def main():
     ap.add_argument("serie")
     ap.add_argument("--ticks", type=int, default=None)
     ap.add_argument("--csv", help="guarda decision/IC/ciclos por tick")
+    ap.add_argument("--radix", type=int, default=1,
+                    help="bits por ciclo del multiplicador (MUL_RADIX)")
     a = ap.parse_args()
     precios = leer_serie(a.serie)[:a.ticks]
-    res = correr(a.hex, precios)
+    res = correr(a.hex, precios, radix=a.radix)
     if a.csv:
         with open(a.csv, "w") as f:
             f.write("tick,precio,decision,ic,ciclos\n")
