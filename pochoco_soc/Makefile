@@ -10,6 +10,7 @@
 #   make tbdon                testbench de la unidad Donchian
 #   make metricas             tablas y gráficos para el informe (docs/metricas/)
 #   make fmax   MUL_MODE=...  Fmax con 5 semillas de place & route (después de make pnr)
+#   make versiones            versiones de las herramientas (docs/versiones.txt)
 #   make modelo               modelo de referencia vs. no operar / comprar y mantener
 #   make medir  PROG=trade_don  verifica decisiones y mide ciclos por tick en
 #                               todas las series de tb/series/ (simulador Python)
@@ -51,7 +52,7 @@ SRC  := $(wildcard rtl/*.v rtl/espino_core/*.v)
 DEFS := -DMUL_MODE=$(MUL_MODE) -DMUL_RADIX=$(MUL_RADIX) -DDON_UNIT=$(DON_UNIT)
 NAME := $(PROG)_m$(MUL_MODE)_r$(MUL_RADIX)$(if $(filter 1,$(DON_UNIT)),_d1,)
 
-.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo metricas fmax clean
+.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo metricas fmax versiones clean
 
 all: bin
 
@@ -70,7 +71,7 @@ synth: hex
 pnr: synth
 	@echo "nextpnr: place & route (registro completo en reports/$(NAME)_nextpnr.log)"
 	@nextpnr-ice40 --hx1k --package vq100 --freq 25 --json $(TOP).json --pcf $(PCF) --asc $(TOP).asc -l reports/$(NAME)_nextpnr.log > /dev/null 2>&1 || (grep -E "ERROR" reports/$(NAME)_nextpnr.log; false)
-	@grep -E "ICESTORM_LC|ICESTORM_RAM" reports/$(NAME)_nextpnr.log | tail -2
+	@grep -E "ICESTORM_LC:|ICESTORM_RAM:" reports/$(NAME)_nextpnr.log | tail -2
 	@grep -E "Max frequency" reports/$(NAME)_nextpnr.log | tail -1
 
 # ---- Paso 3: bitstream (icepack) ----
@@ -121,6 +122,17 @@ fmax: synth
 	    | tee -a reports/$(NAME)_fmax.txt; \
 	  rm -f reports/$(NAME)_seed$$s.log; \
 	done
+
+# ---- Versiones de las herramientas ----
+versiones:
+	@mkdir -p docs
+	@( echo "OSS CAD Suite: $$(cat $$(dirname $$(which yosys))/../VERSION 2>/dev/null || echo desconocida)"; \
+	   echo "yosys: $$(yosys -V)"; \
+	   echo "nextpnr-ice40: $$(nextpnr-ice40 --version 2>&1 | head -1)"; \
+	   echo "icarus verilog: $$(iverilog -V 2>&1 | head -1)"; \
+	   echo "icestorm (icepack/iceprog): incluido en OSS CAD Suite"; \
+	   echo "python: $$(python3 --version 2>&1)"; \
+	   echo "sistema: $$(uname -sr)" ) | tee docs/versiones.txt
 
 # ---- Modelo de referencia ----
 modelo:

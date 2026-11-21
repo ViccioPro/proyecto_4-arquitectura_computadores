@@ -1,0 +1,7 @@
+OSS CAD Suite: 20260308
+yosys: Yosys 0.63+87 (git sha1 2f1cdc2df, clang++ 18.1.8 -fPIC -O3)
+nextpnr-ice40: "nextpnr-ice40" -- Next Generation Place and Route (Version nextpnr-0.9-99-g4ace8952)
+icarus verilog: Icarus Verilog version 14.0 (devel) (s20251012-123-g49126efa7)
+icestorm (icepack/iceprog): incluido en OSS CAD Suite
+python: Python 3.11.6
+sistema: Linux 6.18.60-2-cachyos-lts
