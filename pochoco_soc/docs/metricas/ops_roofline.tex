@@ -1,0 +1,18 @@
+% Generado por model/metricas.py
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lrrrrrrl}
+\toprule
+Versión & Ops útiles/tick & Instr. kernel & Ciclos kernel & Bytes kernel & Intensidad (ops/B) & Mops/s útiles & Nota \\
+\midrule
+Donchian ingenua (SW) & 750.0 & 2865.9 & 7151.9 & 476.0 & 1.58 & 2.622 & kernel en el procesador \\
+Donchian histograma (SW) & 750.0 & 28.2 & 66.4 & 14.0 & 53.39 & 282.418 & kernel en el procesador \\
+Donchian unidad HW & 750.0 & 4.0 & 10.0 & 12.0 & 62.50 & 37.351 & kernel en la unidad (502 ciclos, en paralelo) \\
+Reversión mul SW & 2.9 & 168.1 & 379.0 & 0.0 & inf & 0.191 & kernel en el procesador \\
+Reversión mulc (custom-0) & 2.9 & 2.9 & 36.0 & 0.0 & inf & 2.010 & kernel en el procesador + multiplicador \\
+Reversión mul MMIO & 2.9 & 26.4 & 70.4 & 70.2 & 0.04 & 1.029 & kernel en el procesador + multiplicador \\
+\bottomrule
+\end{tabular}
+\caption{Operaciones útiles por segundo e intensidad operacional del kernel de cada versión (promedios por tick). Donchian: operación útil = procesar un precio de la ventana (750 por tick). Multiplicación: operación útil = un cuadrado del algoritmo.}
+\end{table}

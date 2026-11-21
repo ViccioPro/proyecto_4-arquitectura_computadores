@@ -1,221 +1,214 @@
 # direccion  palabra   linea  fuente
-0x00000000  80010437     44  li   s0, SPI_BASE
-0x00000004  00000493     45  li   s1, 0
-0x00000008  00000193     46  li   gp, 0
-0x0000000c  00000213     47  li   tp, 0
-0x00000010  00000113     48  li   sp, 0
-0x00000014  00000793     49  li   a5, 0
-0x00000018  800203b7     50  li   t2, MUL_BASE          # t2 queda fijo con la base del multiplicador
-0x0000001c  00042283     54  lw   t0, 0(s0)
-0x00000020  0012f293     55  andi t0, t0, 1
-0x00000024  fe028ce3     56  beqz t0, esperar
-0x00000028  00442683     57  lw   a3, 4(s0)             # p (leerlo borra el flag)
-0x0000002c  00d3a023     60  sw   a3, 0(t2)            # A
-0x00000030  00d3a223     61  sw   a3, 4(t2)            # B (empieza)
-0x00000034  0003a303     63  lw   t1, 0(t2)             # estado: 1 = multiplicando
-0x00000038  fe031ee3     64  bnez t1, esp_p2
-0x0000003c  0083a603     65  lw   a2, 8(t2)             # a2 = p^2
-0x00000040  12022283     66  lw   t0, buf_p(tp)         # precio que sale de la ventana
-0x00000044  22022303     67  lw   t1, buf_q(tp)         # su cuadrado
-0x00000048  12d22023     68  sw   a3, buf_p(tp)
-0x0000004c  22c22023     69  sw   a2, buf_q(tp)
-0x00000050  00d484b3     70  add  s1, s1, a3            # S += p - p_viejo
-0x00000054  405484b3     71  sub  s1, s1, t0
-0x00000058  00c181b3     72  add  gp, gp, a2            # Q += p^2 - p_viejo^2
-0x0000005c  406181b3     73  sub  gp, gp, t1
-0x00000060  00420213     74  addi tp, tp, 4
-0x00000064  0ff27213     75  andi tp, tp, IDX_MASK
-0x00000068  04000293     77  li   t0, N                 # ventana llena?
-0x0000006c  00517663     78  bgeu sp, t0, llena
-0x00000070  00110113     79  addi sp, sp, 1
-0x00000074  0a516263     80  bltu sp, t0, mantener
-0x00000078  00d68733     84  add  a4, a3, a3            # 2p   (64p con 6 duplicaciones)
-0x0000007c  00e70733     85  add  a4, a4, a4            # 4p
-0x00000080  00e70733     86  add  a4, a4, a4            # 8p
-0x00000084  00e70733     87  add  a4, a4, a4            # 16p
-0x00000088  00e70733     88  add  a4, a4, a4            # 32p
-0x0000008c  00e70733     89  add  a4, a4, a4            # 64p
-0x00000090  40970733     90  sub  a4, a4, s1            # d
-0x00000094  00078663     93  beqz a5, ver_compra
-0x00000098  06e04863     94  bgtz a4, vender            # con acciones: vender si p > media
-0x0000009c  07c0006f     95  j    mantener
-0x000000a0  06075c63     98  bgez a4, mantener          # comprar solo si p < media
-0x000000a4  0093a023     99  sw   s1, 0(t2)            # A
-0x000000a8  0093a223    100  sw   s1, 4(t2)            # B (empieza)
-0x000000ac  0003a303    102  lw   t1, 0(t2)             # estado: 1 = multiplicando
-0x000000b0  fe031ee3    103  bnez t1, esp_s2
-0x000000b4  0083a603    104  lw   a2, 8(t2)             # a2 = S^2
-0x000000b8  003182b3    105  add  t0, gp, gp            # 2Q   (64Q con 6 duplicaciones)
-0x000000bc  005282b3    106  add  t0, t0, t0            # 4Q
-0x000000c0  005282b3    107  add  t0, t0, t0            # 8Q
-0x000000c4  005282b3    108  add  t0, t0, t0            # 16Q
-0x000000c8  005282b3    109  add  t0, t0, t0            # 32Q
-0x000000cc  005282b3    110  add  t0, t0, t0            # 64Q
-0x000000d0  40c282b3    111  sub  t0, t0, a2            # var = 64Q - S^2
-0x000000d4  005282b3    112  add  t0, t0, t0            # 2 var
-0x000000d8  005282b3    113  add  t0, t0, t0            # 4 var
-0x000000dc  40e00533    114  neg  a0, a4                # |d| (aqui d < 0)
-0x000000e0  00a3a023    115  sw   a0, 0(t2)            # A
-0x000000e4  00a3a223    116  sw   a0, 4(t2)            # B (empieza)
-0x000000e8  0003a303    118  lw   t1, 0(t2)             # estado: 1 = multiplicando
-0x000000ec  fe031ee3    119  bnez t1, esp_d2
-0x000000f0  0083a603    120  lw   a2, 8(t2)             # a2 = d^2
-0x000000f4  02c2f263    121  bgeu t0, a2, mantener      # d^2 <= 4 var -> mantener
-0x000000f8  00100793    125  li   a5, 1
-0x000000fc  07f00293    126  li   t0, BUY63
-0x00000100  00542423    127  sw   t0, 8(s0)
-0x00000104  f19ff06f    128  j    esperar
-0x00000108  00000793    131  li   a5, 0
-0x0000010c  0bf00293    132  li   t0, SELL63
-0x00000110  00542423    133  sw   t0, 8(s0)
-0x00000114  f09ff06f    134  j    esperar
-0x00000118  00042423    137  sw   zero, 8(s0)
-0x0000011c  f01ff06f    138  j    esperar
-0x00000120  00000000    142  .space 256                 # 64 precios
-0x00000124  00000000    142  .space 256                 # 64 precios
-0x00000128  00000000    142  .space 256                 # 64 precios
-0x0000012c  00000000    142  .space 256                 # 64 precios
-0x00000130  00000000    142  .space 256                 # 64 precios
-0x00000134  00000000    142  .space 256                 # 64 precios
-0x00000138  00000000    142  .space 256                 # 64 precios
-0x0000013c  00000000    142  .space 256                 # 64 precios
-0x00000140  00000000    142  .space 256                 # 64 precios
-0x00000144  00000000    142  .space 256                 # 64 precios
-0x00000148  00000000    142  .space 256                 # 64 precios
-0x0000014c  00000000    142  .space 256                 # 64 precios
-0x00000150  00000000    142  .space 256                 # 64 precios
-0x00000154  00000000    142  .space 256                 # 64 precios
-0x00000158  00000000    142  .space 256                 # 64 precios
-0x0000015c  00000000    142  .space 256                 # 64 precios
-0x00000160  00000000    142  .space 256                 # 64 precios
-0x00000164  00000000    142  .space 256                 # 64 precios
-0x00000168  00000000    142  .space 256                 # 64 precios
-0x0000016c  00000000    142  .space 256                 # 64 precios
-0x00000170  00000000    142  .space 256                 # 64 precios
-0x00000174  00000000    142  .space 256                 # 64 precios
-0x00000178  00000000    142  .space 256                 # 64 precios
-0x0000017c  00000000    142  .space 256                 # 64 precios
-0x00000180  00000000    142  .space 256                 # 64 precios
-0x00000184  00000000    142  .space 256                 # 64 precios
-0x00000188  00000000    142  .space 256                 # 64 precios
-0x0000018c  00000000    142  .space 256                 # 64 precios
-0x00000190  00000000    142  .space 256                 # 64 precios
-0x00000194  00000000    142  .space 256                 # 64 precios
-0x00000198  00000000    142  .space 256                 # 64 precios
-0x0000019c  00000000    142  .space 256                 # 64 precios
-0x000001a0  00000000    142  .space 256                 # 64 precios
-0x000001a4  00000000    142  .space 256                 # 64 precios
-0x000001a8  00000000    142  .space 256                 # 64 precios
-0x000001ac  00000000    142  .space 256                 # 64 precios
-0x000001b0  00000000    142  .space 256                 # 64 precios
-0x000001b4  00000000    142  .space 256                 # 64 precios
-0x000001b8  00000000    142  .space 256                 # 64 precios
-0x000001bc  00000000    142  .space 256                 # 64 precios
-0x000001c0  00000000    142  .space 256                 # 64 precios
-0x000001c4  00000000    142  .space 256                 # 64 precios
-0x000001c8  00000000    142  .space 256                 # 64 precios
-0x000001cc  00000000    142  .space 256                 # 64 precios
-0x000001d0  00000000    142  .space 256                 # 64 precios
-0x000001d4  00000000    142  .space 256                 # 64 precios
-0x000001d8  00000000    142  .space 256                 # 64 precios
-0x000001dc  00000000    142  .space 256                 # 64 precios
-0x000001e0  00000000    142  .space 256                 # 64 precios
-0x000001e4  00000000    142  .space 256                 # 64 precios
-0x000001e8  00000000    142  .space 256                 # 64 precios
-0x000001ec  00000000    142  .space 256                 # 64 precios
-0x000001f0  00000000    142  .space 256                 # 64 precios
-0x000001f4  00000000    142  .space 256                 # 64 precios
-0x000001f8  00000000    142  .space 256                 # 64 precios
-0x000001fc  00000000    142  .space 256                 # 64 precios
-0x00000200  00000000    142  .space 256                 # 64 precios
-0x00000204  00000000    142  .space 256                 # 64 precios
-0x00000208  00000000    142  .space 256                 # 64 precios
-0x0000020c  00000000    142  .space 256                 # 64 precios
-0x00000210  00000000    142  .space 256                 # 64 precios
-0x00000214  00000000    142  .space 256                 # 64 precios
-0x00000218  00000000    142  .space 256                 # 64 precios
-0x0000021c  00000000    142  .space 256                 # 64 precios
-0x00000220  00000000    144  .space 256                 # 64 cuadrados
-0x00000224  00000000    144  .space 256                 # 64 cuadrados
-0x00000228  00000000    144  .space 256                 # 64 cuadrados
-0x0000022c  00000000    144  .space 256                 # 64 cuadrados
-0x00000230  00000000    144  .space 256                 # 64 cuadrados
-0x00000234  00000000    144  .space 256                 # 64 cuadrados
-0x00000238  00000000    144  .space 256                 # 64 cuadrados
-0x0000023c  00000000    144  .space 256                 # 64 cuadrados
-0x00000240  00000000    144  .space 256                 # 64 cuadrados
-0x00000244  00000000    144  .space 256                 # 64 cuadrados
-0x00000248  00000000    144  .space 256                 # 64 cuadrados
-0x0000024c  00000000    144  .space 256                 # 64 cuadrados
-0x00000250  00000000    144  .space 256                 # 64 cuadrados
-0x00000254  00000000    144  .space 256                 # 64 cuadrados
-0x00000258  00000000    144  .space 256                 # 64 cuadrados
-0x0000025c  00000000    144  .space 256                 # 64 cuadrados
-0x00000260  00000000    144  .space 256                 # 64 cuadrados
-0x00000264  00000000    144  .space 256                 # 64 cuadrados
-0x00000268  00000000    144  .space 256                 # 64 cuadrados
-0x0000026c  00000000    144  .space 256                 # 64 cuadrados
-0x00000270  00000000    144  .space 256                 # 64 cuadrados
-0x00000274  00000000    144  .space 256                 # 64 cuadrados
-0x00000278  00000000    144  .space 256                 # 64 cuadrados
-0x0000027c  00000000    144  .space 256                 # 64 cuadrados
-0x00000280  00000000    144  .space 256                 # 64 cuadrados
-0x00000284  00000000    144  .space 256                 # 64 cuadrados
-0x00000288  00000000    144  .space 256                 # 64 cuadrados
-0x0000028c  00000000    144  .space 256                 # 64 cuadrados
-0x00000290  00000000    144  .space 256                 # 64 cuadrados
-0x00000294  00000000    144  .space 256                 # 64 cuadrados
-0x00000298  00000000    144  .space 256                 # 64 cuadrados
-0x0000029c  00000000    144  .space 256                 # 64 cuadrados
-0x000002a0  00000000    144  .space 256                 # 64 cuadrados
-0x000002a4  00000000    144  .space 256                 # 64 cuadrados
-0x000002a8  00000000    144  .space 256                 # 64 cuadrados
-0x000002ac  00000000    144  .space 256                 # 64 cuadrados
-0x000002b0  00000000    144  .space 256                 # 64 cuadrados
-0x000002b4  00000000    144  .space 256                 # 64 cuadrados
-0x000002b8  00000000    144  .space 256                 # 64 cuadrados
-0x000002bc  00000000    144  .space 256                 # 64 cuadrados
-0x000002c0  00000000    144  .space 256                 # 64 cuadrados
-0x000002c4  00000000    144  .space 256                 # 64 cuadrados
-0x000002c8  00000000    144  .space 256                 # 64 cuadrados
-0x000002cc  00000000    144  .space 256                 # 64 cuadrados
-0x000002d0  00000000    144  .space 256                 # 64 cuadrados
-0x000002d4  00000000    144  .space 256                 # 64 cuadrados
-0x000002d8  00000000    144  .space 256                 # 64 cuadrados
-0x000002dc  00000000    144  .space 256                 # 64 cuadrados
-0x000002e0  00000000    144  .space 256                 # 64 cuadrados
-0x000002e4  00000000    144  .space 256                 # 64 cuadrados
-0x000002e8  00000000    144  .space 256                 # 64 cuadrados
-0x000002ec  00000000    144  .space 256                 # 64 cuadrados
-0x000002f0  00000000    144  .space 256                 # 64 cuadrados
-0x000002f4  00000000    144  .space 256                 # 64 cuadrados
-0x000002f8  00000000    144  .space 256                 # 64 cuadrados
-0x000002fc  00000000    144  .space 256                 # 64 cuadrados
-0x00000300  00000000    144  .space 256                 # 64 cuadrados
-0x00000304  00000000    144  .space 256                 # 64 cuadrados
-0x00000308  00000000    144  .space 256                 # 64 cuadrados
-0x0000030c  00000000    144  .space 256                 # 64 cuadrados
-0x00000310  00000000    144  .space 256                 # 64 cuadrados
-0x00000314  00000000    144  .space 256                 # 64 cuadrados
-0x00000318  00000000    144  .space 256                 # 64 cuadrados
-0x0000031c  00000000    144  .space 256                 # 64 cuadrados
+0x00000000  80010437     49  li   s0, SPI_BASE
+0x00000004  00000493     50  li   s1, 0
+0x00000008  00000193     51  li   gp, 0
+0x0000000c  00000213     52  li   tp, 0
+0x00000010  00000113     53  li   sp, 0
+0x00000014  00000793     54  li   a5, 0
+0x00000018  800203b7     55  li   t2, MUL_BASE          # t2 queda fijo con la base del multiplicador
+0x0000001c  00042283     59  lw   t0, 0(s0)
+0x00000020  0012f293     60  andi t0, t0, 1
+0x00000024  fe028ce3     61  beqz t0, esperar
+0x00000028  00442683     62  lw   a3, 4(s0)             # p (leerlo borra el flag)
+0x0000002c  1e024283     65  lbu  t0, buf_p(tp)         # precio que sale de la ventana
+0x00000030  1ed20023     66  sb   a3, buf_p(tp)
+0x00000034  00d484b3     67  add  s1, s1, a3            # S += p - p_viejo
+0x00000038  405484b3     68  sub  s1, s1, t0
+0x0000003c  00d3a023     69  sw   a3, 0(t2)            # A
+0x00000040  00d3a223     70  sw   a3, 4(t2)            # B (empieza)
+0x00000044  0003a303     72  lw   t1, 0(t2)             # estado: 1 = multiplicando
+0x00000048  fe031ee3     73  bnez t1, esp_p2
+0x0000004c  0083a603     74  lw   a2, 8(t2)             # a2 = a3^2
+0x00000050  00c181b3     75  add  gp, gp, a2            # Q += p^2
+0x00000054  0053a023     76  sw   t0, 0(t2)            # A
+0x00000058  0053a223     77  sw   t0, 4(t2)            # B (empieza)
+0x0000005c  0003a303     79  lw   t1, 0(t2)             # estado: 1 = multiplicando
+0x00000060  fe031ee3     80  bnez t1, esp_viejo2
+0x00000064  0083a603     81  lw   a2, 8(t2)             # a2 = t0^2
+0x00000068  40c181b3     82  sub  gp, gp, a2            # Q -= p_viejo^2
+0x0000006c  00120213     83  addi tp, tp, 1
+0x00000070  0ff27213     84  andi tp, tp, IDX_MASK
+0x00000074  10000293     86  li   t0, N                 # ventana llena?
+0x00000078  00517663     87  bgeu sp, t0, llena
+0x0000007c  00110113     88  addi sp, sp, 1
+0x00000080  14516c63     89  bltu sp, t0, mantener
+0x00000084  00d68733     93  add  a4, a3, a3            # 2p   (256p con 8 duplicaciones)
+0x00000088  00e70733     94  add  a4, a4, a4            # 4p
+0x0000008c  00e70733     95  add  a4, a4, a4            # 8p
+0x00000090  00e70733     96  add  a4, a4, a4            # 16p
+0x00000094  00e70733     97  add  a4, a4, a4            # 32p
+0x00000098  00e70733     98  add  a4, a4, a4            # 64p
+0x0000009c  00e70733     99  add  a4, a4, a4            # 128p
+0x000000a0  00e70733    100  add  a4, a4, a4            # 256p
+0x000000a4  40970733    101  sub  a4, a4, s1            # d
+0x000000a8  00200313    104  li   t1, 2
+0x000000ac  00679863    105  bne  a5, t1, no_bloq
+0x000000b0  12e05463    106  blez a4, mantener          # BLOQUEADO y p <= media: sigue bloqueado
+0x000000b4  00000793    107  li   a5, 0                 # p cruzo sobre la media: vuelve a FUERA
+0x000000b8  1200006f    108  j    mantener
+0x000000bc  10070e63    110  beqz a4, mantener          # p = media: nada que hacer
+0x000000c0  08078a63    111  beqz a5, fuera
+0x000000c4  0093a023    115  sw   s1, 0(t2)            # A
+0x000000c8  0093a223    116  sw   s1, 4(t2)            # B (empieza)
+0x000000cc  0003a303    118  lw   t1, 0(t2)             # estado: 1 = multiplicando
+0x000000d0  fe031ee3    119  bnez t1, esp_S2_dentro
+0x000000d4  0083a603    120  lw   a2, 8(t2)             # a2 = s1^2
+0x000000d8  003182b3    121  add  t0, gp, gp            # 2Q   (256Q con 8 duplicaciones)
+0x000000dc  005282b3    122  add  t0, t0, t0            # 4Q
+0x000000e0  005282b3    123  add  t0, t0, t0            # 8Q
+0x000000e4  005282b3    124  add  t0, t0, t0            # 16Q
+0x000000e8  005282b3    125  add  t0, t0, t0            # 32Q
+0x000000ec  005282b3    126  add  t0, t0, t0            # 64Q
+0x000000f0  005282b3    127  add  t0, t0, t0            # 128Q
+0x000000f4  005282b3    128  add  t0, t0, t0            # 256Q
+0x000000f8  40c282b3    129  sub  t0, t0, a2            # var
+0x000000fc  00075663    130  bgez a4, dentro_dpos
+0x00000100  40e005b3    131  neg  a1, a4                # |d|
+0x00000104  0080006f    132  j    dentro_dabs
+0x00000108  00070593    134  mv   a1, a4
+0x0000010c  00b3a023    136  sw   a1, 0(t2)            # A
+0x00000110  00b3a223    137  sw   a1, 4(t2)            # B (empieza)
+0x00000114  0003a303    139  lw   t1, 0(t2)             # estado: 1 = multiplicando
+0x00000118  fe031ee3    140  bnez t1, esp_d2_dentro
+0x0000011c  0083a603    141  lw   a2, 8(t2)             # a2 = a1^2
+0x00000120  00074863    142  bltz a4, ver_stop
+0x00000124  0ac2fa63    143  bgeu t0, a2, mantener      # d > 0: vender si d^2 > var
+0x00000128  00000793    144  li   a5, 0
+0x0000012c  0a00006f    145  j    vender
+0x00000130  10000337    147  li   t1, VAR_MAX
+0x00000134  0a62f263    148  bgeu t0, t1, mantener      # var >= 2^28: 16*var > d^2 maximo
+0x00000138  005282b3    149  add  t0, t0, t0            # 2 var
+0x0000013c  005282b3    150  add  t0, t0, t0            # 4 var
+0x00000140  005282b3    151  add  t0, t0, t0            # 8 var
+0x00000144  005282b3    152  add  t0, t0, t0            # 16 var
+0x00000148  08c2f863    153  bgeu t0, a2, mantener      # d^2 <= 16 var: no hay stop-loss
+0x0000014c  00200793    154  li   a5, 2                 # stop-loss: vender y bloquear
+0x00000150  07c0006f    155  j    vender
+0x00000154  08075263    159  bgez a4, mantener          # comprar solo si p < media
+0x00000158  0093a023    161  sw   s1, 0(t2)            # A
+0x0000015c  0093a223    162  sw   s1, 4(t2)            # B (empieza)
+0x00000160  0003a303    164  lw   t1, 0(t2)             # estado: 1 = multiplicando
+0x00000164  fe031ee3    165  bnez t1, esp_S2_fuera
+0x00000168  0083a603    166  lw   a2, 8(t2)             # a2 = s1^2
+0x0000016c  003182b3    167  add  t0, gp, gp            # 2Q   (256Q con 8 duplicaciones)
+0x00000170  005282b3    168  add  t0, t0, t0            # 4Q
+0x00000174  005282b3    169  add  t0, t0, t0            # 8Q
+0x00000178  005282b3    170  add  t0, t0, t0            # 16Q
+0x0000017c  005282b3    171  add  t0, t0, t0            # 32Q
+0x00000180  005282b3    172  add  t0, t0, t0            # 64Q
+0x00000184  005282b3    173  add  t0, t0, t0            # 128Q
+0x00000188  005282b3    174  add  t0, t0, t0            # 256Q
+0x0000018c  40c282b3    175  sub  t0, t0, a2            # var
+0x00000190  00075663    176  bgez a4, fuera_dpos
+0x00000194  40e005b3    177  neg  a1, a4                # |d|
+0x00000198  0080006f    178  j    fuera_dabs
+0x0000019c  00070593    180  mv   a1, a4
+0x000001a0  00b3a023    182  sw   a1, 0(t2)            # A
+0x000001a4  00b3a223    183  sw   a1, 4(t2)            # B (empieza)
+0x000001a8  0003a303    185  lw   t1, 0(t2)             # estado: 1 = multiplicando
+0x000001ac  fe031ee3    186  bnez t1, esp_d2_fuera
+0x000001b0  0083a603    187  lw   a2, 8(t2)             # a2 = a1^2
+0x000001b4  005282b3    188  add  t0, t0, t0            # 2 var
+0x000001b8  02c2f063    189  bgeu t0, a2, mantener      # d^2 <= 2 var -> mantener
+0x000001bc  00100793    190  li   a5, 1
+0x000001c0  07f00293    194  li   t0, BUY63
+0x000001c4  00542423    195  sw   t0, 8(s0)
+0x000001c8  e55ff06f    196  j    esperar
+0x000001cc  0bf00293    199  li   t0, SELL63
+0x000001d0  00542423    200  sw   t0, 8(s0)
+0x000001d4  e49ff06f    201  j    esperar
+0x000001d8  00042423    204  sw   zero, 8(s0)
+0x000001dc  e41ff06f    205  j    esperar
+0x000001e0  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001e4  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001e8  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001ec  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001f0  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001f4  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001f8  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000001fc  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000200  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000204  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000208  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000020c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000210  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000214  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000218  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000021c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000220  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000224  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000228  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000022c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000230  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000234  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000238  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000023c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000240  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000244  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000248  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000024c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000250  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000254  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000258  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000025c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000260  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000264  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000268  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000026c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000270  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000274  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000278  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000027c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000280  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000284  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000288  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000028c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000290  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000294  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x00000298  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x0000029c  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002a0  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002a4  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002a8  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002ac  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002b0  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002b4  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002b8  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002bc  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002c0  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002c4  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002c8  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002cc  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002d0  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002d4  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002d8  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
+0x000002dc  00000000    209  .space 256                 # ultimos 256 precios (un byte cada uno)
 
 # Simbolos
 # _start                   = 0x00000000 (0)
 # esperar                  = 0x0000001c (28)
-# esp_p2                   = 0x00000034 (52)
-# N                        = 0x00000040 (64)
-# llena                    = 0x00000078 (120)
+# esp_p2                   = 0x00000044 (68)
+# esp_viejo2               = 0x0000005c (92)
 # BUY63                    = 0x0000007f (127)
-# ver_compra               = 0x000000a0 (160)
-# esp_s2                   = 0x000000ac (172)
+# llena                    = 0x00000084 (132)
+# no_bloq                  = 0x000000bc (188)
 # SELL63                   = 0x000000bf (191)
-# esp_d2                   = 0x000000e8 (232)
-# comprar                  = 0x000000f8 (248)
+# esp_S2_dentro            = 0x000000cc (204)
 # IDX_MASK                 = 0x000000ff (255)
-# vender                   = 0x00000108 (264)
-# mantener                 = 0x00000118 (280)
-# buf_p                    = 0x00000120 (288)
-# buf_q                    = 0x00000220 (544)
+# N                        = 0x00000100 (256)
+# dentro_dpos              = 0x00000108 (264)
+# dentro_dabs              = 0x0000010c (268)
+# esp_d2_dentro            = 0x00000114 (276)
+# ver_stop                 = 0x00000130 (304)
+# fuera                    = 0x00000154 (340)
+# esp_S2_fuera             = 0x00000160 (352)
+# fuera_dpos               = 0x0000019c (412)
+# fuera_dabs               = 0x000001a0 (416)
+# esp_d2_fuera             = 0x000001a8 (424)
+# comprar                  = 0x000001c0 (448)
+# vender                   = 0x000001cc (460)
+# mantener                 = 0x000001d8 (472)
+# buf_p                    = 0x000001e0 (480)
+# VAR_MAX                  = 0x10000000 (268435456)
 # SPI_BASE                 = 0x80010000 (2147549184)
 # MUL_BASE                 = 0x80020000 (2147614720)

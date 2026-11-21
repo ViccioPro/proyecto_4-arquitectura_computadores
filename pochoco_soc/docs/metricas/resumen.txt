@@ -1,0 +1,92 @@
+======================================================================
+1. ALGORITMO VS. REFERENCIAS (serie completa, reglas del testbench)
+======================================================================
+         Serie  No operar  Comprar y mantener  Donchian 500/250  Reversión N=256  Órdenes Donchian  Comisiones Donchian  Pérd. máx. Donchian
+      practica      10000                6497              9011            12211                29                  145                 6730
+  amd_2022_ene      10000                8315             12410             4638                31                  155                 2579
+  amd_2022_may      10000                9647             10371             7511                40                  200                 3165
+    apple_2022      10000               11063             13770             6682                26                  130                 2878
+    apple_2023      10000               10371              9358            12048                36                  180                 4896
+     meta_2022      10000                9695              9949            18217                28                  140                 2433
+  netflix_2022      10000                9179             11595             8520                28                  140                 4408
+  netflix_2023      10000                9170             10504            12162                33                  165                 4488
+    tesla_2022      10000                9995             12329             6294                32                  160                 3019
+  Donchian 500/250: media 11033, peor 9011, gana a ambas referencias en 6/9
+  Reversión N=256: media 9809, peor 4638, gana a ambas referencias en 4/9
+
+======================================================================
+2. MEDICIONES POR TICK (simulador del Espino, precios cada 2500 ciclos)
+======================================================================
+  Donchian ingenua (SW)        ticks   1000  diferencias con el modelo: 0
+  Donchian histograma (SW)     ticks 175500  diferencias con el modelo: 0
+  Donchian unidad HW           ticks 175500  diferencias con el modelo: 0
+  Reversión mul SW             ticks 177696  diferencias con el modelo: 0
+  Reversión mulc (custom-0)    ticks 177696  diferencias con el modelo: 0
+  Reversión mul MMIO           ticks 177696  diferencias con el modelo: 0
+
+  'Ciclos' = procesador ocupado por tick (desde que llega el precio hasta
+  que vuelve a esperar el siguiente). 'Latencia' = hasta escribir DECISION.
+                    Versión  IC prom  IC peor  Ciclos prom  Ciclos peor   CPI  Latencia peor  Tiempo prom (us)  Tiempo peor (us)
+      Donchian ingenua (SW)   2880.9     3040       7186.0         7561  2.49           7550            287.44            302.44
+   Donchian histograma (SW)     43.2      264        100.8          650  2.33             27              4.03             26.00
+         Donchian unidad HW     16.0       19         38.4           45  2.40             35              1.53              1.80
+           Reversión mul SW    205.7      336        462.5          746  2.25            743             18.50             29.84
+  Reversión mulc (custom-0)     41.6       57        121.5          173  2.92            170              4.86              6.92
+         Reversión mul MMIO     64.0       92        153.9          221  2.40            218              6.16              8.84
+
+======================================================================
+3. PEOR CASO VS. PERÍODO DE CADA RONDA (ciclos disponibles = T - SPI)
+======================================================================
+                    Versión  Ronda 1 (249762 ciclos)  Ronda 2 (24762 ciclos)  Ronda 3 (2262 ciclos)
+      Donchian ingenua (SW)                  3.0% OK                30.5% OK              334.2% NO
+   Donchian histograma (SW)                  0.3% OK                 2.6% OK               28.7% OK
+         Donchian unidad HW                  0.0% OK                 0.2% OK                2.0% OK
+           Reversión mul SW                  0.3% OK                 3.0% OK               33.0% OK
+  Reversión mulc (custom-0)                  0.1% OK                 0.7% OK                7.6% OK
+         Reversión mul MMIO                  0.1% OK                 0.9% OK                9.8% OK
+
+======================================================================
+4. LEY DE AMDAHL (promedios por tick)
+======================================================================
+  f = fracción de ciclos del kernel en la versión base; s_k = speedup del kernel;
+  predicho = 1 / ((1 - f) + f / s_k); medido = ciclos base / ciclos variante.
+                      Base                   Variante  f (kernel)  Kernel base  Kernel var.    s_k  Predicho   Medido  Medido peor caso
+     Donchian ingenua (SW)   Donchian histograma (SW)       0.995       7151.9         66.4  107.7    71.49x   71.32x            11.63x
+     Donchian ingenua (SW)         Donchian unidad HW       0.995       7151.9         10.0  715.2   162.87x  187.28x           168.02x
+  Donchian histograma (SW)         Donchian unidad HW       0.659         66.4         10.0    6.6     2.27x    2.63x            14.44x
+          Reversión mul SW  Reversión mulc (custom-0)       0.819        379.0         36.0   10.5     3.87x    3.81x             4.31x
+          Reversión mul SW         Reversión mul MMIO       0.819        379.0         70.4    5.4     3.01x    3.01x             3.38x
+
+======================================================================
+5. OPS/S Y ROOFLINE
+======================================================================
+  Techo de cómputo del Espino: 12.5 Mops/s (1 operación por instrucción, CPI mínimo 2)
+  Techo de memoria: 33.3 MB/s (un lw de 4 bytes cada 3 ciclos)
+  Punto de quiebre: 0.375 ops/byte
+
+  Donchian - operación útil: procesar un precio de la ventana para H o L
+  (trabajo de referencia por tick: 500 + 250 = 750 operaciones).
+  Multiplicación - operación útil: una multiplicación (cuadrado) del algoritmo.
+  Nota: con esta definición (trabajo útil equivalente), un punto sobre el techo
+  del Espino indica que la versión evita trabajo (histograma: mejora algorítmica)
+  o lo hace en hardware propio en paralelo (unidad): el procesador solo, haciendo
+  el trabajo completo, no podría superar el techo.
+                    Versión  Ops útiles/tick  Instr. kernel  Ciclos kernel  Bytes kernel  Intensidad (ops/B)  Mops/s útiles                                           Nota
+      Donchian ingenua (SW)            750.0         2865.9         7151.9         476.0                1.58          2.622                        kernel en el procesador
+   Donchian histograma (SW)            750.0           28.2           66.4          14.0               53.39        282.418                        kernel en el procesador
+         Donchian unidad HW            750.0            4.0           10.0          12.0               62.50         37.351  kernel en la unidad (502 ciclos, en paralelo)
+           Reversión mul SW              2.9          168.1          379.0           0.0                 inf          0.191                        kernel en el procesador
+  Reversión mulc (custom-0)              2.9            2.9           36.0           0.0                 inf          2.010        kernel en el procesador + multiplicador
+         Reversión mul MMIO              2.9           26.4           70.4          70.2                0.04          1.029        kernel en el procesador + multiplicador
+
+======================================================================
+6. RECURSOS (desde reports/; generar con make pnr ...)
+======================================================================
+                                 Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)            % LC  Fmax (MHz)
+                   Donchian ingenua (SW)      796       102         228    12          947             74%       47.24
+                Donchian histograma (SW)      796       102         228    12          947             74%   45.9-47.6
+                      Donchian unidad HW      931       153         303    13         1118             87%   44.3-47.0
+                        Reversión mul SW      796       102         228    12          947             74%   45.9-47.6
+               Reversión mulc (custom-0)      945       133         310    12         1096             86%   44.1-46.0
+                      Reversión mul MMIO      975       133         374    12         1181             92%   43.4-47.4
+  Unidad HW v1 (histogramas, descartada)     1208       220           -    15         1478  115% (no cabe)           -

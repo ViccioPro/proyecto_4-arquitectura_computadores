@@ -8,6 +8,8 @@
 #   make iss    MUL_MODE=1    estimación rápida de IC/ciclos/CPI (simulador Python)
 #   make tbmul  MUL_RADIX=1   testbench del multiplicador
 #   make tbdon                testbench de la unidad Donchian
+#   make metricas             tablas y gráficos para el informe (docs/metricas/)
+#   make fmax   MUL_MODE=...  Fmax con 5 semillas de place & route (después de make pnr)
 #   make modelo               modelo de referencia vs. no operar / comprar y mantener
 #   make medir  PROG=trade_don  verifica decisiones y mide ciclos por tick en
 #                               todas las series de tb/series/ (simulador Python)
@@ -49,7 +51,7 @@ SRC  := $(wildcard rtl/*.v rtl/espino_core/*.v)
 DEFS := -DMUL_MODE=$(MUL_MODE) -DMUL_RADIX=$(MUL_RADIX) -DDON_UNIT=$(DON_UNIT)
 NAME := $(PROG)_m$(MUL_MODE)_r$(MUL_RADIX)$(if $(filter 1,$(DON_UNIT)),_d1,)
 
-.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo clean
+.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo metricas fmax clean
 
 all: bin
 
@@ -104,6 +106,21 @@ tbmul:
 tbdon:
 	iverilog -g2012 -s tb_pochoco_donchian -o /tmp/tb_don rtl/pochoco_donchian.v tb/tb_pochoco_donchian.sv
 	vvp -n /tmp/tb_don
+
+# ---- Métricas para el informe ----
+metricas:
+	python3 model/metricas.py
+
+# ---- Fmax con varias semillas (usa el trader_top.json de la última síntesis) ----
+fmax: synth
+	@rm -f reports/$(NAME)_fmax.txt
+	@for s in 1 2 3 4 5; do \
+	  nextpnr-ice40 --hx1k --package vq100 --freq 25 --seed $$s --json $(TOP).json --pcf $(PCF) \
+	    -l reports/$(NAME)_seed$$s.log > /dev/null 2>&1; \
+	  echo "semilla $$s: $$(grep 'Max frequency' reports/$(NAME)_seed$$s.log | tail -1 | grep -o '[0-9.]* MHz' | head -1)" \
+	    | tee -a reports/$(NAME)_fmax.txt; \
+	  rm -f reports/$(NAME)_seed$$s.log; \
+	done
 
 # ---- Modelo de referencia ----
 modelo:

@@ -3553,7 +3553,7 @@ ABC: + &write -n <abc-temp-dir>/output.aig
 ABC: + &verify 
 ABC: Networks are equivalent.  Time =     0.06 sec
 ABC: + time 
-ABC: elapse: 0.71 seconds, total: 0.71 seconds
+ABC: elapse: 0.68 seconds, total: 0.68 seconds
 
 18.41.19.6. Executing AIGER frontend.
 <suppressed ~3065 debug messages>
@@ -3920,6 +3920,6 @@ Found and reported 0 problems.
       931   SB_LUT4
        13   SB_RAM40_4K
 
-End of script. Logfile hash: a951539f75, CPU: user 3.07s system 0.01s, MEM: 60.40 MB peak
+End of script. Logfile hash: 8a5acb722b, CPU: user 3.02s system 0.01s, MEM: 60.46 MB peak
 Yosys 0.63+87 (git sha1 2f1cdc2df, clang++ 18.1.8 -fPIC -O3)
-Time spent: 42% 11x techmap (1 sec), 19% 1x abc9_exe (0 sec), ...
+Time spent: 43% 11x techmap (1 sec), 18% 1x abc9_exe (0 sec), ...

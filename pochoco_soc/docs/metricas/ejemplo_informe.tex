@@ -1,0 +1,23 @@
+% Ejemplo de uso en Overleaf de las tablas y gráficos generados por model/metricas.py
+% Subir a Overleaf la carpeta docs/metricas/ y agregar al preámbulo:
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage[margin=1.5cm,landscape]{geometry}
+\begin{document}
+\input{metricas/estrategias.tex}
+\input{metricas/por_tick.tex}
+\input{metricas/rondas.tex}
+\input{metricas/amdahl.tex}
+\input{metricas/ops_roofline.tex}
+\input{metricas/recursos.tex}
+\begin{figure}[htbp]
+  \centering
+  \begin{minipage}{0.48\linewidth}\input{metricas/roofline_donchian.tex}\end{minipage}\hfill
+  \begin{minipage}{0.48\linewidth}\input{metricas/roofline_mul.tex}\end{minipage}
+  \caption{Roofline del Espino (25\,MHz, CPI mínimo 2) con el kernel de cada versión.}
+\end{figure}
+\end{document}

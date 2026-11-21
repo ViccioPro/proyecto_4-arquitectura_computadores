@@ -1,0 +1,5 @@
+semilla 1: 46.65 MHz
+semilla 2: 45.48 MHz
+semilla 3: 47.41 MHz
+semilla 4: 43.41 MHz
+semilla 5: 45.55 MHz
