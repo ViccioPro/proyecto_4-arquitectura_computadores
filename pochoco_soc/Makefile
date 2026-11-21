@@ -7,6 +7,7 @@
 #   make prog   MUL_MODE=1    genera el bitstream y programa la Go Board
 #   make iss    MUL_MODE=1    estimación rápida de IC/ciclos/CPI (simulador Python)
 #   make tbmul  MUL_RADIX=1   testbench del multiplicador
+#   make tbdon                testbench de la unidad Donchian
 #   make modelo               modelo de referencia vs. no operar / comprar y mantener
 #   make medir  PROG=trade_don  verifica decisiones y mide ciclos por tick en
 #                               todas las series de tb/series/ (simulador Python)
@@ -22,6 +23,9 @@
 #   1 = instrucción custom-0 (sw/trade_mulc.s)   <- variante final, por defecto
 #   2 = periférico MMIO      (sw/trade_mmio.s)
 # MUL_RADIX = bits por ciclo del multiplicador (1, 2 o 4).
+# DON_UNIT  = 1 agrega la unidad de ventana deslizante (rtl/pochoco_donchian.v),
+#             que usa sw/trade_don_hw.s.
+#   Ej.: make sim MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw
 # PROG = programa a usar; por defecto el de la variante.
 #   Ej.: make prog MUL_MODE=0 PROG=trade_min   (prueba de conexión)
 #
@@ -30,6 +34,7 @@
 
 MUL_MODE  ?= 1
 MUL_RADIX ?= 1
+DON_UNIT  ?= 0
 
 PROG_0 := trade
 PROG_1 := trade_mulc
@@ -41,10 +46,10 @@ PCF  := goboard.pcf
 ASM  := assembler_v3.py
 HEX  := sw/trade.hex
 SRC  := $(wildcard rtl/*.v rtl/espino_core/*.v)
-DEFS := -DMUL_MODE=$(MUL_MODE) -DMUL_RADIX=$(MUL_RADIX)
-NAME := $(PROG)_m$(MUL_MODE)_r$(MUL_RADIX)
+DEFS := -DMUL_MODE=$(MUL_MODE) -DMUL_RADIX=$(MUL_RADIX) -DDON_UNIT=$(DON_UNIT)
+NAME := $(PROG)_m$(MUL_MODE)_r$(MUL_RADIX)$(if $(filter 1,$(DON_UNIT)),_d1,)
 
-.PHONY: all hex synth pnr bin prog sim iss medir tbmul modelo clean
+.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo clean
 
 all: bin
 
@@ -94,6 +99,11 @@ medir: hex
 tbmul:
 	iverilog -g2012 -DMUL_RADIX=$(MUL_RADIX) -s tb_pochoco_mul -o /tmp/tb_mul rtl/pochoco_mul.v rtl/pochoco_mul_mmio.v tb/tb_pochoco_mul.sv
 	vvp -n /tmp/tb_mul
+
+# ---- Testbench de la unidad Donchian ----
+tbdon:
+	iverilog -g2012 -s tb_pochoco_donchian -o /tmp/tb_don rtl/pochoco_donchian.v tb/tb_pochoco_donchian.sv
+	vvp -n /tmp/tb_don
 
 # ---- Modelo de referencia ----
 modelo:

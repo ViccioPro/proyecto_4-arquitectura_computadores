@@ -18,6 +18,11 @@
 `ifndef MUL_RADIX
 `define MUL_RADIX 1
 `endif
+// [Proyecto 4] DON_UNIT = 1 agrega la unidad de ventana deslizante
+// (canal de Donchian) en 0x8004_0000. Ej.: iverilog -DDON_UNIT=1 ...
+`ifndef DON_UNIT
+`define DON_UNIT 0
+`endif
 
 module pochoco_soc #(
   parameter NumWords   = 512,
@@ -26,7 +31,8 @@ module pochoco_soc #(
   //              0 = sin contador (ahorra celdas lógicas; lee 0)
   parameter CycleCounter = 0,
   parameter MulMode      = `MUL_MODE,
-  parameter MulRadix     = `MUL_RADIX
+  parameter MulRadix     = `MUL_RADIX,
+  parameter DonUnit      = `DON_UNIT
 ) (
   input  wire       i_Clk,
 
@@ -91,36 +97,42 @@ module pochoco_soc #(
     .data_rdata_i  (data_rdata)
   );
 
-  wire is_mmio, spi_sel, per_sel, mul_sel;
+  wire is_mmio, spi_sel, per_sel, mul_sel, don_sel;
   assign is_mmio = data_addr[31];
   // [Proyecto 4] 0x8002_xxxx = multiplicador MMIO (solo con MulMode = 2)
   assign mul_sel = (MulMode == 2) ? (is_mmio & data_addr[17]) : 1'b0;
-  assign per_sel = is_mmio & ~data_addr[16] & ~mul_sel;
+  // [Proyecto 4] 0x8004_xxxx = unidad Donchian (solo con DonUnit = 1)
+  assign don_sel = (DonUnit != 0) ? (is_mmio & data_addr[18]) : 1'b0;
+  assign per_sel = is_mmio & ~data_addr[16] & ~mul_sel & ~don_sel;
   assign spi_sel = is_mmio &  data_addr[16];
 
-  wire ram_b_req, per_req, spi_req, mul_req;
+  wire ram_b_req, per_req, spi_req, mul_req, don_req;
   assign ram_b_req = data_req & ~is_mmio;
   assign per_req   = data_req &  per_sel;
   assign spi_req   = data_req &  spi_sel;
   assign mul_req   = data_req &  mul_sel;
+  assign don_req   = data_req &  don_sel;
 
-  wire [31:0] ram_b_rdata, per_rdata, spi_rdata, mul_rdata;
+  wire [31:0] ram_b_rdata, per_rdata, spi_rdata, mul_rdata, don_rdata;
 
-  reg rd_is_per, rd_is_spi, rd_is_mul;
+  reg rd_is_per, rd_is_spi, rd_is_mul, rd_is_don;
   always @(posedge clk or negedge rst_ni) begin
     if (!rst_ni) begin
       rd_is_per <= 1'b0;
       rd_is_spi <= 1'b0;
       rd_is_mul <= 1'b0;
+      rd_is_don <= 1'b0;
     end else if (data_req & ~data_we) begin
       rd_is_per <= per_sel;
       rd_is_spi <= spi_sel;
       rd_is_mul <= mul_sel;
+      rd_is_don <= don_sel;
     end
   end
   assign data_rdata = rd_is_per ? per_rdata :
                       rd_is_spi ? spi_rdata :
-                      rd_is_mul ? mul_rdata : ram_b_rdata;
+                      rd_is_mul ? mul_rdata :
+                      rd_is_don ? don_rdata : ram_b_rdata;
 
   pochoco_ram #(.NumWords(NumWords), .MemFile(MemFile)) u_ram (
     .clk_i     (clk),
@@ -184,6 +196,24 @@ module pochoco_soc #(
       );
     end else begin : g_sin_mul_mmio
       assign mul_rdata = 32'b0;
+    end
+  endgenerate
+
+  // [Proyecto 4] Unidad de ventana deslizante (canal de Donchian)
+  generate
+    if (DonUnit != 0) begin : g_donchian
+      pochoco_donchian u_don (
+        .clk_i   (clk),
+        .rst_ni  (rst_ni),
+        .sel_i   (don_sel),
+        .req_i   (don_req),
+        .we_i    (data_we),
+        .addr_i  (data_addr[7:0]),
+        .wdata_i (data_wdata),
+        .rdata_o (don_rdata)
+      );
+    end else begin : g_sin_donchian
+      assign don_rdata = 32'b0;
     end
   endgenerate
 

@@ -6,6 +6,8 @@ Mide por tick, con el simulador del Espino:
               a esperar el siguiente (incluye actualizar el estado). Es lo
               que debe caber en el período de cada ronda.
 y verifica que las decisiones sean idénticas al modelo.
+Los precios llegan cada PERIODO ciclos (por defecto 2500 = 100 us a 25 MHz,
+ronda 3), como en la placa.
 Uso: python3 medir_tick.py ../sw/trade_don.hex ../sw/trade_don.lst serie.csv [más series...]
 """
 import sys, os
@@ -21,13 +23,21 @@ def simbolo(lst, nombre):
     raise KeyError(nombre)
 
 
-def medir(hexf, lst, precios, radix=1):
+PERIODO = 2500
+
+
+def medir(hexf, lst, precios, radix=1, periodo=PERIODO):
     esperar = simbolo(lst, "esperar")
     cpu = E.Espino(hexf, radix)
     while cpu.pc != esperar:
         cpu.step()
     out = []
+    llegada = cpu.cycle
     for p in precios:
+        # el siguiente precio llega un período después del anterior; si el
+        # programa terminó antes, el tiempo de espera se salta (mismo resultado)
+        cpu.cycle = max(cpu.cycle, llegada)
+        llegada = cpu.cycle + periodo
         cpu.pending = (cpu.cycle, p)
         t0, i0 = cpu.cycle, cpu.instret
         n = len(cpu.decision_writes)

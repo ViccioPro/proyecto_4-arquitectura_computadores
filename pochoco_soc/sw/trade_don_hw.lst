@@ -1,0 +1,48 @@
+# direccion  palabra   linea  fuente
+0x00000000  80010437     27  li   s0, SPI_BASE
+0x00000004  800404b7     28  li   s1, DON_BASE
+0x00000008  800003b7     29  li   t2, PER_BASE
+0x0000000c  00000113     30  li   sp, 0
+0x00000010  00000793     31  li   a5, 0
+0x00000014  00042283     34  lw   t0, 0(s0)
+0x00000018  0012f293     35  andi t0, t0, 1
+0x0000001c  fe028ce3     36  beqz t0, esperar
+0x00000020  00442683     37  lw   a3, 4(s0)             # p
+0x00000024  00d3a023     38  sw   a3, 0(t2)             # mostrar el precio
+0x00000028  0004a283     40  lw   t0, 0(s1)             # 1 = la unidad sigue actualizando
+0x0000002c  fe029ee3     41  bnez t0, esp_unidad
+0x00000030  1f400293     43  li   t0, LE
+0x00000034  02516c63     44  bltu sp, t0, mantener      # menos de 500 precios previos
+0x00000038  00079e63     45  bnez a5, ver_venta
+0x0000003c  0044a283     46  lw   t0, 4(s1)             # H
+0x00000040  02d2f663     47  bgeu t0, a3, mantener      # p <= H
+0x00000044  00100793     48  li   a5, 1
+0x00000048  07f00293     49  li   t0, BUY63
+0x0000004c  00542423     50  sw   t0, 8(s0)
+0x00000050  0200006f     51  j    entregar
+0x00000054  0084a283     53  lw   t0, 8(s1)             # L
+0x00000058  0056fa63     54  bgeu a3, t0, mantener      # p >= L
+0x0000005c  00000793     55  li   a5, 0
+0x00000060  0bf00293     56  li   t0, SELL63
+0x00000064  00542423     57  sw   t0, 8(s0)
+0x00000068  0080006f     58  j    entregar
+0x0000006c  00042423     60  sw   zero, 8(s0)
+0x00000070  00d4a023     63  sw   a3, 0(s1)             # la unidad actualiza H y L en paralelo
+0x00000074  1f400293     64  li   t0, LE
+0x00000078  f8517ee3     65  bgeu sp, t0, esperar
+0x0000007c  00110113     66  addi sp, sp, 1
+0x00000080  f95ff06f     67  j    esperar
+
+# Simbolos
+# _start                   = 0x00000000 (0)
+# esperar                  = 0x00000014 (20)
+# esp_unidad               = 0x00000028 (40)
+# ver_venta                = 0x00000054 (84)
+# mantener                 = 0x0000006c (108)
+# entregar                 = 0x00000070 (112)
+# BUY63                    = 0x0000007f (127)
+# SELL63                   = 0x000000bf (191)
+# LE                       = 0x000001f4 (500)
+# PER_BASE                 = 0x80000000 (2147483648)
+# SPI_BASE                 = 0x80010000 (2147549184)
+# DON_BASE                 = 0x80040000 (2147745792)

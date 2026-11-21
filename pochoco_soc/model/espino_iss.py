@@ -13,6 +13,7 @@ MMIO simulado:
   0x8001_0008 DECISION (escritura)        0x8000_0000/04 displays/LEDs
   0x8000_0008 botones (0)                 0x8000_000C contador de ciclos
   0x8002_0000 multiplicador MMIO (MUL_MODE = 2): +0 A / estado, +4 B, +8 producto
+  0x8004_0000 unidad Donchian (DON_UNIT = 1): +0 precio / estado, +4 H, +8 L, +C n
 
 Instrucción custom-0 "mulc" (MUL_MODE = 1): rd = rs1*rs2 mod 2^32.
   Ciclos: m + 3, con m = max(1, ceil(bits(rs2) / radix)).
@@ -43,6 +44,9 @@ class Espino:
         self.mul_p = 0
         self.mul_inicio = -1      # ciclo en que el multiplicador MMIO empieza
         self.mul_m = 0
+        from donchian_hw import Unit
+        self.don = Unit()
+        self.don_fin = -1         # ciclo en que la unidad Donchian queda libre
         self.mem = [0] * RAM_WORDS
         with open(hex_path) as f:
             for i, line in enumerate(l for l in f if l.strip()):
@@ -72,6 +76,11 @@ class Espino:
 
     def load_word(self, addr):
         self._arrive()
+        if addr & 0x80000000 and addr & 0x40000:          # unidad Donchian
+            off = addr & 0xFF
+            if off == 0x00:
+                return int(self.cycle + 1 < self.don_fin)
+            return {0x04: self.don.h, 0x08: self.don.l, 0x0C: self.don.n}.get(off, 0)
         if addr & 0x80000000 and addr & 0x20000:          # multiplicador MMIO
             off = addr & 0xFF
             if off == 0x00:
@@ -98,6 +107,15 @@ class Espino:
         return self.mem[(addr >> 2) % RAM_WORDS]
 
     def store(self, addr, val, be_mask):
+        if addr & 0x80000000 and addr & 0x40000:          # unidad Donchian
+            if (addr & 0xFF) == 0x00 and not self.don.busy():
+                self.don.clock(push=val & 0xFF)
+                ciclos = 1
+                while self.don.busy():
+                    self.don.clock()
+                    ciclos += 1
+                self.don_fin = self.cycle + 1 + ciclos
+            return
         if addr & 0x80000000 and addr & 0x20000:          # multiplicador MMIO
             off = addr & 0xFF
             if off == 0x00:
