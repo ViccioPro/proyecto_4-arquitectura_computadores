@@ -1,7 +1,8 @@
 // Proyecto 4 - Testbench de la unidad de ventana deslizante (pochoco_donchian)
 // Entrega precios por el bus y, después de cada uno, compara H y L con el
 // cálculo directo (máximo de los últimos 500, mínimo de los últimos 250).
-// También mide cuántos ciclos queda ocupada la unidad por precio.
+// También mide cuántos ciclos queda ocupada la unidad por precio
+// (con la ventana llena debe ser 502: recorre 500 precios + 2 ciclos).
 //
 // Correr desde pochoco_soc/:
 //   iverilog -g2012 -s tb_pochoco_donchian -o /tmp/tb_don rtl/pochoco_donchian.v tb/tb_pochoco_donchian.sv
