@@ -8,7 +8,14 @@
 #   make iss    MUL_MODE=1    estimación rápida de IC/ciclos/CPI (simulador Python)
 #   make tbmul  MUL_RADIX=1   testbench del multiplicador
 #   make modelo               modelo de referencia vs. no operar / comprar y mantener
+#   make medir  PROG=trade_don  verifica decisiones y mide ciclos por tick en
+#                               todas las series de tb/series/ (simulador Python)
 #   make clean                borra archivos generados
+#
+# Estrategia vigente: canal de Donchian 500/250 (sw/trade_don.s, no usa
+# multiplicaciones). Ej.: make sim MUL_MODE=0 PROG=trade_don
+# Los programas trade.s / trade_mulc.s / trade_mmio.s son de la estrategia
+# anterior (reversión a la media), usada para medir el multiplicador.
 #
 # Variantes (MUL_MODE):
 #   0 = solo software        (sw/trade.s)
@@ -37,7 +44,7 @@ SRC  := $(wildcard rtl/*.v rtl/espino_core/*.v)
 DEFS := -DMUL_MODE=$(MUL_MODE) -DMUL_RADIX=$(MUL_RADIX)
 NAME := $(PROG)_m$(MUL_MODE)_r$(MUL_RADIX)
 
-.PHONY: all hex synth pnr bin prog sim iss tbmul modelo clean
+.PHONY: all hex synth pnr bin prog sim iss medir tbmul modelo clean
 
 all: bin
 
@@ -78,6 +85,10 @@ sim: hex
 # ---- Estimación rápida con el simulador del Espino ----
 iss: hex
 	python3 model/espino_iss.py $(HEX) tb/practica.csv --radix $(MUL_RADIX)
+
+# ---- Verificación y ciclos por tick en todas las series ----
+medir: hex
+	python3 model/medir_tick.py $(HEX) sw/$(PROG).lst tb/practica.csv tb/series/*.csv
 
 # ---- Testbench del multiplicador ----
 tbmul:

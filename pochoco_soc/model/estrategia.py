@@ -22,6 +22,11 @@ S^2 y N*Q <= 4,26e9 (caben en 32 bits). En assembly, si var >= 2^28 el
 stop-loss no se evalúa (16*var no cabe en 32 bits, y además ya es mayor
 que cualquier d^2 posible, así que la condición sería falsa igual).
 
+ESTRATEGIA VIGENTE (21/11): canal de Donchian 500/250 (EstrategiaDonchian),
+elegida por robustez en 9 series con validación cruzada. La reversión a la
+media (EstrategiaReversion) se conserva como referencia: es la que se probó
+con la FPGA maestra el 18/11.
+
 Uso:
   python3 estrategia.py practica.csv            # serie completa
   python3 estrategia.py practica.csv --ticks 2000
@@ -45,11 +50,14 @@ def leer_serie(ruta):
         return [int(r["price"]) for r in csv.DictReader(f)]
 
 
+LE = 500                # ventana del máximo (entrada)
+LX = 250                # ventana del mínimo (salida)
+
 FUERA, DENTRO, BLOQUEADO = 0, 1, 2
 
 
-class Estrategia:
-    """Recibe un precio por tick y devuelve el byte de decisión."""
+class EstrategiaReversion:
+    """[Anterior, probada con la maestra el 18/11] Reversión a la media N=256."""
 
     def __init__(self):
         self.buf = [0] * N
@@ -91,6 +99,40 @@ class Estrategia:
             self.estado = DENTRO
             return BUY63
         return HOLD
+
+
+class EstrategiaDonchian:
+    """Canal de Donchian (ruptura de canal, seguimiento de tendencia).
+
+    Con los precios ANTERIORES al actual:
+      H = máximo de los últimos LE = 500 precios
+      L = mínimo de los últimos LX = 250 precios
+    - Sin posición: compra 63 si p > H   (rompe el máximo de 500 ticks)
+    - Con posición: vende 63 si p < L    (rompe el mínimo de 250 ticks)
+    - En otro caso: mantener. Primeros 500 precios: mantener.
+    """
+
+    def __init__(self):
+        self.hist = []
+        self.dentro = False
+
+    def tick(self, p):
+        dec = HOLD
+        if len(self.hist) >= LE:
+            if not self.dentro and p > max(self.hist[-LE:]):
+                self.dentro = True
+                dec = BUY63
+            elif self.dentro and p < min(self.hist[-LX:]):
+                self.dentro = False
+                dec = SELL63
+        self.hist.append(p)
+        if len(self.hist) > LE:
+            del self.hist[0]
+        return dec
+
+
+# Estrategia vigente (la usan verificar.py y espino_iss.py)
+Estrategia = EstrategiaDonchian
 
 
 class Mercado:
@@ -168,7 +210,7 @@ def main():
     a = ap.parse_args()
     precios = leer_serie(a.serie)[:a.ticks]
     filas = [
-        ("Estrategia (N=256, bandas+stop)", simular(precios, decisiones_estrategia)),
+        ("Estrategia (Donchian 500/250)", simular(precios, decisiones_estrategia)),
         ("No operar", simular(precios, referencia_no_operar)),
         ("Comprar y mantener", referencia_comprar_mantener(precios)),
     ]
