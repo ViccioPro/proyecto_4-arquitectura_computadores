@@ -31,12 +31,12 @@ Info: constrained 'i_SPI_SCLK' to bel 'X13/Y8/io1'
 Info: Packing constants..
 Info: Packing IOs..
 Info: Packing LUT-FFs..
-Info:      798 LCs used as LUT4 only
-Info:      177 LCs used as LUT4 and DFF
+Info:      827 LCs used as LUT4 only
+Info:      179 LCs used as LUT4 and DFF
 Info: Packing non-LUT FFs..
-Info:      197 LCs used as DFF only
+Info:      195 LCs used as DFF only
 Info: Packing carries..
-Info:        1 LCs used as CARRY only
+Info:        2 LCs used as CARRY only
 Info: Packing indirect carry+LUT pairs...
 Info:        0 LUTs merged into carry LCs
 Info: Packing RAMs..
@@ -46,244 +46,251 @@ Info: Packing PLLs..
 Info: Promoting globals..
 Info: promoting i_Clk$SB_IO_IN (fanout 398)
 Info: promoting u_pochoco.por_cnt_SB_LUT4_I3_O_SB_LUT4_I3_O [reset] (fanout 241)
-Info: promoting u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_O [cen] (fanout 80)
-Info: promoting u_pochoco.u_core.u_ctrl.lsu_busy_i_SB_LUT4_I3_O [cen] (fanout 57)
-Info: promoting u_pochoco.g_mul_mmio.u_mul.sel_i_SB_LUT4_I3_O [cen] (fanout 32)
-Info: promoting u_pochoco.g_mul_mmio.u_mul.sel_i_SB_LUT4_I3_1_O [cen] (fanout 32)
+Info: promoting u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_O [cen] (fanout 80)
+Info: promoting u_pochoco.u_ram.mem.1.2_RDATA_4_SB_LUT4_I3_O_SB_LUT4_I1_O_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_1_O [cen] (fanout 57)
 Info: Constraining chains...
 Info:        6 LCs used to legalise carry chains.
-Info: Checksum: 0xe3eb6eb2
+Info: Checksum: 0x250150d5
 
 Info: Device utilisation:
-Info: 	         ICESTORM_LC:    1181/   1280    92%
+Info: 	         ICESTORM_LC:    1211/   1280    94%
 Info: 	        ICESTORM_RAM:      12/     16    75%
-Info: 	               SB_IO:      29/    112    25%
-Info: 	               SB_GB:       6/      8    75%
-Info: 	        ICESTORM_PLL:       0/      1     0%
+Info: 	               SB_IO:      29/     72    40%
+Info: 	               SB_GB:       4/      8    50%
 Info: 	         SB_WARMBOOT:       0/      1     0%
 
 Info: Placed 29 cells based on constraints.
-Info: Creating initial analytic placement for 1059 cells, random placement wirelen = 15741.
-Info:     at initial placer iter 0, wirelen = 584
-Info:     at initial placer iter 1, wirelen = 583
-Info:     at initial placer iter 2, wirelen = 626
-Info:     at initial placer iter 3, wirelen = 625
-Info: Running main analytical placer, max placement attempts per cell = 188498.
-Info:     at iteration #1, type ALL: wirelen solved = 597, spread = 7227, legal = 8163; time = 0.02s
-Info:     at iteration #2, type ALL: wirelen solved = 642, spread = 7373, legal = 8465; time = 0.02s
-Info:     at iteration #3, type ALL: wirelen solved = 702, spread = 7371, legal = 8745; time = 0.02s
-Info:     at iteration #4, type ALL: wirelen solved = 776, spread = 7146, legal = 8357; time = 0.03s
-Info:     at iteration #5, type ALL: wirelen solved = 908, spread = 7010, legal = 8348; time = 0.02s
-Info:     at iteration #6, type ALL: wirelen solved = 1011, spread = 7084, legal = 8169; time = 0.02s
-Info: HeAP Placer Time: 0.19s
-Info:   of which solving equations: 0.10s
-Info:   of which spreading cells: 0.01s
-Info:   of which strict legalisation: 0.05s
+Info: Creating initial analytic placement for 1087 cells, random placement wirelen = 16908.
+Info:     at initial placer iter 0, wirelen = 605
+Info:     at initial placer iter 1, wirelen = 591
+Info:     at initial placer iter 2, wirelen = 590
+Info:     at initial placer iter 3, wirelen = 601
+Info: Running main analytical placer, max placement attempts per cell = 197192.
+Info:     at iteration #1, type ALL: wirelen solved = 601, spread = 7218, legal = 8069; time = 0.02s
+Info:     at iteration #2, type ALL: wirelen solved = 591, spread = 7301, legal = 8518; time = 0.02s
+Info:     at iteration #3, type ALL: wirelen solved = 711, spread = 7361, legal = 8408; time = 0.02s
+Info:     at iteration #4, type ALL: wirelen solved = 819, spread = 7368, legal = 8626; time = 0.02s
+Info:     at iteration #5, type ALL: wirelen solved = 1089, spread = 7185, legal = 8601; time = 0.03s
+Info:     at iteration #6, type ALL: wirelen solved = 1109, spread = 7101, legal = 8005; time = 0.02s
+Info:     at iteration #7, type ALL: wirelen solved = 1219, spread = 7274, legal = 8695; time = 0.02s
+Info:     at iteration #8, type ALL: wirelen solved = 1308, spread = 7156, legal = 8525; time = 0.02s
+Info:     at iteration #9, type ALL: wirelen solved = 1433, spread = 7037, legal = 8069; time = 0.03s
+Info:     at iteration #10, type ALL: wirelen solved = 1700, spread = 6916, legal = 8517; time = 0.02s
+Info:     at iteration #11, type ALL: wirelen solved = 1784, spread = 6935, legal = 8701; time = 0.02s
+Info: HeAP Placer Time: 0.36s
+Info:   of which solving equations: 0.20s
+Info:   of which spreading cells: 0.02s
+Info:   of which strict legalisation: 0.08s
 
 Info: Running simulated annealing placer for refinement.
-Info:   at iteration #1: temp = 0.000000, timing cost = 389, wirelen = 8163
-Info:   at iteration #5: temp = 0.000000, timing cost = 353, wirelen = 6476
-Info:   at iteration #10: temp = 0.000000, timing cost = 441, wirelen = 6194
-Info:   at iteration #15: temp = 0.000000, timing cost = 465, wirelen = 6015
-Info:   at iteration #20: temp = 0.000000, timing cost = 456, wirelen = 5945
-Info:   at iteration #25: temp = 0.000000, timing cost = 468, wirelen = 5915
-Info:   at iteration #25: temp = 0.000000, timing cost = 467, wirelen = 5921 
-Info: SA placement time 0.70s
+Info:   at iteration #1: temp = 0.000000, timing cost = 540, wirelen = 8005
+Info:   at iteration #5: temp = 0.000000, timing cost = 517, wirelen = 6515
+Info:   at iteration #10: temp = 0.000000, timing cost = 476, wirelen = 6263
+Info:   at iteration #15: temp = 0.000000, timing cost = 433, wirelen = 6068
+Info:   at iteration #20: temp = 0.000000, timing cost = 422, wirelen = 6021
+Info:   at iteration #21: temp = 0.000000, timing cost = 421, wirelen = 6013 
+Info: SA placement time 0.91s
 
-Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 43.46 MHz (PASS at 25.00 MHz)
+Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 38.19 MHz (PASS at 25.00 MHz)
 
-Info: Max delay <async>                         -> posedge i_Clk$SB_IO_IN_$glb_clk: 1.82 ns
-Info: Max delay posedge i_Clk$SB_IO_IN_$glb_clk -> <async>                        : 3.61 ns
+Info: Max delay <async>                         -> posedge i_Clk$SB_IO_IN_$glb_clk: 1.81 ns
+Info: Max delay posedge i_Clk$SB_IO_IN_$glb_clk -> <async>                        : 3.48 ns
 
 Info: Slack histogram:
-Info:  legend: * represents 3 endpoint(s)
-Info:          + represents [1,3) endpoint(s)
-Info: [ 16990,  18096) |*********************+
-Info: [ 18096,  19202) |********+
-Info: [ 19202,  20308) |***************************+
-Info: [ 20308,  21414) |*************************+
-Info: [ 21414,  22520) |*************+
-Info: [ 22520,  23626) |*********+
-Info: [ 23626,  24732) |********+
-Info: [ 24732,  25838) |******+
-Info: [ 25838,  26944) |***************+
-Info: [ 26944,  28050) |***********+
-Info: [ 28050,  29156) |***+
-Info: [ 29156,  30262) |****+
-Info: [ 30262,  31368) |*+
-Info: [ 31368,  32474) |*****************+
-Info: [ 32474,  33580) |**************************************************+
-Info: [ 33580,  34686) |**************+
-Info: [ 34686,  35792) |********************+
-Info: [ 35792,  36898) |******************************+
-Info: [ 36898,  38004) |***********************************************************+
-Info: [ 38004,  39110) |************************************************************ 
-Info: Checksum: 0x036afb1b
+Info:  legend: times are in ps
+Info:          * represents 5 endpoint(s)
+Info:          + represents [1,5) endpoint(s)
+Info: [ 13814,  15075) |***************+
+Info: [ 15075,  16336) | 
+Info: [ 16336,  17597) |******+
+Info: [ 17597,  18858) |*********************************+
+Info: [ 18858,  20119) |***********+
+Info: [ 20119,  21380) |**********+
+Info: [ 21380,  22641) |**+
+Info: [ 22641,  23902) |********+
+Info: [ 23902,  25163) |******+
+Info: [ 25163,  26424) |******+
+Info: [ 26424,  27685) |********+
+Info: [ 27685,  28946) |*****+
+Info: [ 28946,  30207) |*+
+Info: [ 30207,  31468) |**+
+Info: [ 31468,  32729) |****************************+
+Info: [ 32729,  33990) |****************************+
+Info: [ 33990,  35251) |*********+
+Info: [ 35251,  36512) |*******************+
+Info: [ 36512,  37773) |************************************+
+Info: [ 37773,  39034) |************************************************************ 
+Info: Checksum: 0x56d901dc
 
 Info: Routing..
 Info: Setting up routing queue.
-Info: Routing 4024 arcs.
+Info: Routing 4150 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      135        864 |  135   864 |      3252|       0.15       0.15|
-Info:       2000 |      337       1634 |  202   770 |      2559|       0.14       0.29|
-Info:       3000 |      675       2269 |  338   635 |      2008|       0.11       0.40|
-Info:       4000 |      996       2947 |  321   678 |      1457|       0.11       0.51|
-Info:       5000 |     1489       3447 |  493   500 |      1186|       0.16       0.67|
-Info:       6000 |     1909       3996 |  420   549 |       824|       0.17       0.84|
-Info:       7000 |     2320       4562 |  411   566 |       451|       0.20       1.04|
-Info:       7835 |     2595       5121 |  275   559 |         0|       0.16       1.20|
+Info:       1000 |      304        695 |  304   695 |      3542|       0.30       0.30|
+Info:       2000 |      683       1316 |  379   621 |      3145|       0.29       0.60|
+Info:       3000 |      901       2043 |  218   727 |      2493|       0.20       0.80|
+Info:       4000 |     1431       2513 |  530   470 |      2245|       0.25       1.05|
+Info:       5000 |     1739       3204 |  308   691 |      1754|       0.18       1.23|
+Info:       6000 |     2151       3788 |  412   584 |      1390|       0.25       1.48|
+Info:       7000 |     2517       4392 |  366   604 |       924|       0.23       1.70|
+Info:       8000 |     3012       4883 |  495   491 |       686|       0.33       2.03|
+Info:       9000 |     3541       5341 |  529   458 |       475|       0.35       2.38|
+Info:       9751 |     3732       5900 |  191   559 |         0|       0.19       2.56|
 Info: Routing complete.
-Info: Router1 time 1.20s
-Info: Checksum: 0x80f64079
+Info: Router1 time 2.56s
+Info: Checksum: 0x4337b043
 
 Info: Critical path report for clock 'i_Clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
 Info:       type curr  total name
-Info:   clk-to-q  2.15  2.15 Source u_pochoco.u_ram.mem.0.0_RAM.RDATA_2
-Info:    routing  0.59  2.73 Net u_pochoco.u_ram.mem.0.0_RDATA_5[2] (3,9) -> (4,9)
-Info:                          Sink u_pochoco.u_ram.mem.0.0_RDATA_3_SB_LUT4_O_LC.I3
-Info:                          Defined in:
-Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/brams_map.v:204.532-204.765
-Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_sim.v:1488.16-1488.21
-Info:      logic  0.31  3.05 Source u_pochoco.u_ram.mem.0.0_RDATA_3_SB_LUT4_O_LC.O
-Info:    routing  0.59  3.64 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_O_I3[1] (4,9) -> (4,9)
-Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_I2_SB_LUT4_O_LC.I3
+Info:   clk-to-q  2.15  2.15 Source u_pochoco.u_ram.mem.0.0_RAM.RDATA_8
+Info:    routing  0.59  2.73 Net u_pochoco.u_ram.mem.0.0_RDATA[0] (10,5) -> (9,5)
+Info:                          Sink u_pochoco.u_ram.mem.0.0_RDATA_SB_LUT4_I3_LC.I2
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  3.95 Source u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_I2_SB_LUT4_O_LC.O
-Info:    routing  0.59  4.54 Net u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3[0] (4,9) -> (5,10)
-Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_LC.I2
+Info:      logic  0.38  3.11 Source u_pochoco.u_ram.mem.0.0_RDATA_SB_LUT4_I3_LC.O
+Info:    routing  0.59  3.70 Net u_pochoco.u_ram.mem.0.0_RDATA_SB_LUT4_I3_O[3] (9,5) -> (8,5)
+Info:                          Sink u_pochoco.u_ram.mem.0.0_RDATA_6_SB_LUT4_I3_O_SB_LUT4_O_2_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.38  4.92 Source u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_LC.O
-Info:    routing  0.59  5.51 Net u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O[1] (5,10) -> (5,11)
-Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_LC.I3
+Info:      logic  0.31  4.01 Source u_pochoco.u_ram.mem.0.0_RDATA_6_SB_LUT4_I3_O_SB_LUT4_O_2_LC.O
+Info:    routing  0.59  4.60 Net u_pochoco.u_ram.mem.0.0_RDATA_6_SB_LUT4_I3_O[2] (8,5) -> (7,6)
+Info:                          Sink u_pochoco.u_ram.mem.1.2_RDATA_4_SB_LUT4_I3_O_SB_LUT4_I1_O_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_1_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  5.82 Source u_pochoco.u_ram.mem.0.2_RDATA_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_LC.O
-Info:    routing  0.59  6.41 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_O[2] (5,11) -> (6,12)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I2_O_SB_LUT4_O_LC.I3
+Info:      logic  0.31  4.92 Source u_pochoco.u_ram.mem.1.2_RDATA_4_SB_LUT4_I3_O_SB_LUT4_I1_O_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_1_LC.O
+Info:    routing  0.96  5.88 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_O_I2[2] (7,6) -> (7,8)
+Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  6.72 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I2_O_SB_LUT4_O_LC.O
-Info:    routing  0.59  7.31 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1[1] (6,12) -> (6,12)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_O_LC.I3
+Info:      logic  0.31  6.19 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_O_LC.O
+Info:    routing  0.59  6.78 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3[1] (7,8) -> (6,9)
+Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  7.63 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_O_LC.O
-Info:    routing  0.59  8.22 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3[1] (6,12) -> (6,12)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_LC.I3
+Info:      logic  0.31  7.09 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_LC.O
+Info:    routing  0.59  7.68 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_I3_O[0] (6,9) -> (5,9)
+Info:                          Sink u_pochoco.u_ram.mem.0.3_RDATA_8_SB_LUT4_I3_O_SB_LUT4_I0_O_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  8.53 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_LC.O
-Info:    routing  0.59  9.12 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O[1] (6,12) -> (7,12)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_1_LC.I3
+Info:      logic  0.31  8.00 Source u_pochoco.u_ram.mem.0.3_RDATA_8_SB_LUT4_I3_O_SB_LUT4_I0_O_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_O_LC.O
+Info:    routing  0.59  8.59 Net u_pochoco.u_ram.mem.0.3_RDATA_8_SB_LUT4_I3_O_SB_LUT4_I0_O_SB_LUT4_O_I3_SB_LUT4_I2_O[1] (5,9) -> (6,9)
+Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  9.43 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_1_LC.O
-Info:    routing  0.59  10.02 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_1_O[1] (7,12) -> (7,11)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_1_O_SB_LUT4_I3_LC.I3
+Info:      logic  0.31  8.90 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_O_LC.O
+Info:    routing  0.59  9.49 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I0_SB_LUT4_O_I2[1] (6,9) -> (7,10)
+Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  10.34 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_1_O_SB_LUT4_I3_LC.O
-Info:    routing  1.33  11.67 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I2_O_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_1_O_SB_LUT4_I3_O[3] (7,11) -> (7,5)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
+Info:      logic  0.31  9.80 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_O_LC.O
+Info:    routing  0.59  10.39 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I2_O[1] (7,10) -> (7,9)
+Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  11.98 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_LC.O
-Info:    routing  0.59  12.57 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O[2] (7,5) -> (7,5)
-Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_4_SB_LUT4_O_I2_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_LC.I2
+Info:      logic  0.31  10.71 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_I3_O_SB_LUT4_O_LC.O
+Info:    routing  0.59  11.30 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_I3_O[2] (7,9) -> (7,8)
+Info:                          Sink u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.38  12.95 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_4_SB_LUT4_O_I2_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_LC.O
-Info:    routing  0.59  13.53 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_4_SB_LUT4_O_I2_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O[2] (7,5) -> (8,4)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
+Info:      logic  0.31  11.61 Source u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_I2_O_SB_LUT4_I3_O_SB_LUT4_O_LC.O
+Info:    routing  1.33  12.94 Net u_pochoco.u_core.u_rf.u_bankB.u_lo_WDATA_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I3_SB_LUT4_O_I2_SB_LUT4_I2_O_SB_LUT4_I3_I1_SB_LUT4_O_I3_SB_LUT4_I2_O_SB_LUT4_I2_O_SB_LUT4_I3_O[3] (7,8) -> (6,14)
+Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_O_1_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  13.85 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_O_LC.O
-Info:    routing  1.22  15.07 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_I3_O[1] (8,4) -> (11,4)
-Info:                          Sink u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
+Info:      logic  0.31  13.26 Source u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_LUT4_O_1_LC.O
+Info:    routing  0.59  13.84 Net u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_I3[2] (6,14) -> (6,14)
+Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  15.38 Source u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_O_LC.O
-Info:    routing  0.59  15.97 Net u_pochoco.u_core.u_if.pc_next_SB_LUT4_O_4_I2_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_CARRY_I1_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_I3_O[2] (11,4) -> (12,4)
-Info:                          Sink u_pochoco.spi_sel_SB_LUT4_I3_I1_SB_LUT4_O_1_LC.I2
+Info:      logic  0.31  14.16 Source u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O_SB_LUT4_O_LC.O
+Info:    routing  1.27  15.43 Net u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_I3_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_CARRY_CI_CO_SB_LUT4_I3_O[2] (6,14) -> (6,11)
+Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.38  16.35 Source u_pochoco.spi_sel_SB_LUT4_I3_I1_SB_LUT4_O_1_LC.O
-Info:    routing  1.59  17.94 Net u_pochoco.spi_sel_SB_LUT4_I3_I1[1] (12,4) -> (5,3)
-Info:                          Sink u_pochoco.g_mul_mmio.u_mul.sel_i_SB_LUT4_I3_2_LC.I2
+Info:      logic  0.31  15.75 Source u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_O_LC.O
+Info:    routing  0.59  16.33 Net u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O[2] (6,11) -> (6,11)
+Info:                          Sink u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_I3_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.38  18.32 Source u_pochoco.g_mul_mmio.u_mul.sel_i_SB_LUT4_I3_2_LC.O
-Info:    routing  1.64  19.96 Net u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0[3] (5,3) -> (1,8)
-Info:                          Sink u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_LC.I3
+Info:      logic  0.31  16.65 Source u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_I3_LC.O
+Info:    routing  0.59  17.24 Net u_pochoco.u_ram.mem.0.2_RDATA_7_SB_LUT4_I2_O_SB_LUT4_I2_1_O_SB_LUT4_I2_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_LUT4_I3_O[3] (6,11) -> (7,11)
+Info:                          Sink u_pochoco.u_ram.mem.1.2_RDATA_4_SB_LUT4_I3_O_SB_LUT4_I1_O_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_DFFR_D_Q_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.31  20.28 Source u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_LC.O
-Info:    routing  0.33  20.60 Net u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_O (1,8) -> (0,9)
-Info:                          Sink $gbuf_u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_O_$glb_ce.USER_SIGNAL_TO_GLOBAL_BUFFER
+Info:      logic  0.31  17.55 Source u_pochoco.u_ram.mem.1.2_RDATA_4_SB_LUT4_I3_O_SB_LUT4_I1_O_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_DFFR_D_Q_SB_LUT4_O_LC.O
+Info:    routing  1.64  19.20 Net u_pochoco.u_ram.mem.1.2_RDATA_4_SB_LUT4_I3_O_SB_LUT4_I1_O_SB_LUT4_I1_O_SB_LUT4_O_I3_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_DFFR_D_Q[2] (7,11) -> (2,6)
+Info:                          Sink u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_LUT4_I3_O_SB_DFFER_Q_D_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_DFFER_D_Q_SB_LUT4_O_I3_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_LUT4_I3_O_SB_LUT4_O_LC.I2
 Info:                          Defined in:
-Info:                               rtl/pochoco_mul.v:51.3-75.6
-Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/ff_map.v:14.63-14.116
-Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_sim.v:656.8-656.9
-Info:      logic  0.62  21.22 Source $gbuf_u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_O_$glb_ce.GLOBAL_BUFFER_OUTPUT
-Info:    routing  0.60  21.83 Net u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_I0_SB_LUT4_I2_O_$glb_ce (0,9) -> (4,4)
-Info:                          Sink u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_O_SB_LUT4_O_3_I2_SB_LUT4_I2_O_SB_LUT4_O_11_LC.CEN
-Info:      setup  0.10  21.92 Source u_pochoco.u_spi.mosi_SB_DFFER_D_Q_SB_LUT4_I3_O_SB_LUT4_O_3_I2_SB_LUT4_I2_O_SB_LUT4_O_11_LC.CEN
-Info: 8.15 ns logic, 13.77 ns routing
+Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.38  19.58 Source u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_LUT4_I3_O_SB_DFFER_Q_D_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_O_SB_DFFER_D_Q_SB_LUT4_O_I3_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_LUT4_I3_O_SB_LUT4_O_LC.O
+Info:    routing  1.64  21.22 Net u_pochoco.u_ram.mem.1.1_WDATA_1_SB_DFF_Q_D[2] (2,6) -> (5,1)
+Info:                          Sink u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_LC.I3
+Info:                          Defined in:
+Info:                               rtl/pochoco_mul.v:65.16-65.26
+Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:      logic  0.31  21.54 Source u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_LC.O
+Info:    routing  0.33  21.86 Net u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_O (5,1) -> (6,0)
+Info:                          Sink $gbuf_u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_O_$glb_ce.USER_SIGNAL_TO_GLOBAL_BUFFER
+Info:      logic  0.62  22.48 Source $gbuf_u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_O_$glb_ce.GLOBAL_BUFFER_OUTPUT
+Info:    routing  0.60  23.08 Net u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_I1_SB_DFFER_Q_D_SB_LUT4_I2_I1_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I3_O_SB_LUT4_I2_O_$glb_ce (6,0) -> (1,4)
+Info:                          Sink u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_LUT4_I3_O_SB_DFFER_Q_D_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_LC.CEN
+Info:      setup  0.10  23.18 Source u_pochoco.u_ram.mem.1.2_WDATA_SB_DFF_Q_D_SB_DFFER_D_Q_SB_LUT4_I1_I2_SB_LUT4_I3_O_SB_DFFER_Q_D_SB_LUT4_O_I3_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_CARRY_CO_CI_SB_LUT4_I3_LC.CEN
+Info: 8.34 ns logic, 14.84 ns routing
 
 Info: Critical path report for cross-domain path '<async>' -> 'posedge i_Clk$SB_IO_IN_$glb_clk':
 Info:       type curr  total name
-Info:     source  0.00  0.00 Source i_SPI_SCLK$sb_io.D_IN_0
-Info:    routing  1.27  1.27 Net i_SPI_SCLK$SB_IO_IN (13,8) -> (12,12)
-Info:                          Sink u_pochoco.u_spi.sclk_sync_SB_DFFR_Q_1_DFFLC.I0
+Info:     source  0.00  0.00 Source i_SPI_CS_n$sb_io.D_IN_0
+Info:    routing  1.60  1.60 Net i_SPI_CS_n$SB_IO_IN (13,11) -> (12,16)
+Info:                          Sink i_SPI_CS_n_SB_DFFS_D_DFFLC.I0
 Info:                          Defined in:
-Info:                               rtl/pochoco_spi_slave.v:24.22-24.32
-Info:      setup  0.47  1.74 Source u_pochoco.u_spi.sclk_sync_SB_DFFR_Q_1_DFFLC.I0
-Info: 0.47 ns logic, 1.27 ns routing
+Info:                               rtl/pochoco_soc.v:49.21-49.31
+Info:      setup  0.47  2.07 Source i_SPI_CS_n_SB_DFFS_D_DFFLC.I0
+Info: 0.47 ns logic, 1.60 ns routing
 
 Info: Critical path report for cross-domain path 'posedge i_Clk$SB_IO_IN_$glb_clk' -> '<async>':
 Info:       type curr  total name
-Info:   clk-to-q  0.54  0.54 Source o_SPI_MISO_SB_LUT4_O_I2_SB_DFFER_Q_D_SB_LUT4_O_LC.O
-Info:    routing  1.27  1.81 Net o_SPI_MISO_SB_LUT4_O_I2[0] (9,15) -> (12,12)
-Info:                          Sink o_SPI_MISO_SB_LUT4_O_LC.I2
+Info:   clk-to-q  0.54  0.54 Source o_SPI_MISO_SB_LUT4_O_I3_SB_DFFER_Q_D_SB_LUT4_O_LC.O
+Info:    routing  1.59  2.13 Net o_SPI_MISO_SB_LUT4_O_I3[1] (7,16) -> (12,12)
+Info:                          Sink o_SPI_MISO_SB_LUT4_O_LC.I3
 Info:                          Defined in:
 Info:                               /opt/oss-cad-suite/lib/../share/yosys/ice40/cells_map.v:6.21-6.22
-Info:      logic  0.38  2.19 Source o_SPI_MISO_SB_LUT4_O_LC.O
-Info:    routing  1.96  4.15 Net o_SPI_MISO$SB_IO_OUT (12,12) -> (13,9)
+Info:      logic  0.31  2.44 Source o_SPI_MISO_SB_LUT4_O_LC.O
+Info:    routing  1.27  3.72 Net o_SPI_MISO$SB_IO_OUT (12,12) -> (13,9)
 Info:                          Sink o_SPI_MISO$sb_io.D_OUT_0
 Info:                          Defined in:
-Info:                               rtl/pochoco_spi_slave.v:27.22-27.32
-Info: 0.92 ns logic, 3.23 ns routing
+Info:                               rtl/trader_top.v:35.17-35.27
+Info: 0.86 ns logic, 2.86 ns routing
 
-Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 45.61 MHz (PASS at 25.00 MHz)
+Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 43.13 MHz (PASS at 25.00 MHz)
 
-Info: Max delay <async>                         -> posedge i_Clk$SB_IO_IN_$glb_clk: 1.74 ns
-Info: Max delay posedge i_Clk$SB_IO_IN_$glb_clk -> <async>                        : 4.15 ns
+Info: Max delay <async>                         -> posedge i_Clk$SB_IO_IN_$glb_clk: 2.07 ns
+Info: Max delay posedge i_Clk$SB_IO_IN_$glb_clk -> <async>                        : 3.72 ns
 
 Info: Slack histogram:
-Info:  legend: * represents 4 endpoint(s)
-Info:          + represents [1,4) endpoint(s)
-Info: [ 18075,  19110) |********************+
-Info: [ 19110,  20145) |**********************+
-Info: [ 20145,  21180) |********************+
-Info: [ 21180,  22215) |***************+
-Info: [ 22215,  23250) |*******+
-Info: [ 23250,  24285) |******+
-Info: [ 24285,  25320) |******+
-Info: [ 25320,  26355) |*+
-Info: [ 26355,  27390) |*****************+
-Info: [ 27390,  28425) |*****+
-Info: [ 28425,  29460) |***+
-Info: [ 29460,  30495) |*+
-Info: [ 30495,  31530) |**+
-Info: [ 31530,  32565) |**+
-Info: [ 32565,  33600) |*****+
-Info: [ 33600,  34635) |**********************************************************+
-Info: [ 34635,  35670) |*****************+
-Info: [ 35670,  36705) |****************+
-Info: [ 36705,  37740) |*********************************************+
-Info: [ 37740,  38775) |************************************************************ 
+Info:  legend: times are in ps
+Info:          * represents 5 endpoint(s)
+Info:          + represents [1,5) endpoint(s)
+Info: [ 16815,  17913) |********************+
+Info: [ 17913,  19011) |************************+
+Info: [ 19011,  20109) |***************+
+Info: [ 20109,  21207) |***********+
+Info: [ 21207,  22305) |**+
+Info: [ 22305,  23403) |******+
+Info: [ 23403,  24501) |****+
+Info: [ 24501,  25599) | 
+Info: [ 25599,  26697) | 
+Info: [ 26697,  27795) |***************+
+Info: [ 27795,  28893) |*****+
+Info: [ 28893,  29991) |****+
+Info: [ 29991,  31089) |+
+Info: [ 31089,  32187) |****+
+Info: [ 32187,  33285) |*****+
+Info: [ 33285,  34383) |***+
+Info: [ 34383,  35481) |********************************************************+
+Info: [ 35481,  36579) |***************+
+Info: [ 36579,  37677) |****************************+
+Info: [ 37677,  38775) |************************************************************ 
 
 Info: Program finished normally.

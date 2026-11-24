@@ -5,13 +5,13 @@
 
         +----------Local Count, excluding submodules.
         | 
-     1073 wires
-     4603 wire bits
-     1073 public wires
-     4603 public wire bits
+     1070 wires
+     2765 wire bits
+     1070 public wires
+     2765 public wire bits
        23 ports
        29 port bits
-     1415 cells
+     1447 cells
        15   $scopeinfo
       153   SB_CARRY
        88   SB_DFF
@@ -21,6 +21,6 @@
         8   SB_DFFR
         3   SB_DFFS
         4   SB_DFFSR
-      931   SB_LUT4
+      963   SB_LUT4
        13   SB_RAM40_4K
 

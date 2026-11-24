@@ -87,11 +87,11 @@
 6. RECURSOS (desde reports/; generar con make pnr ...)
 ======================================================================
                                  Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)            % LC  Fmax (MHz)
-                   Donchian ingenua (SW)      796       102         228    12          947             74%       47.24
-                Donchian histograma (SW)      796       102         228    12          947             74%   45.9-47.6
-                      Donchian unidad HW      931       153         303    13         1118             87%   44.3-47.0
-    Donchian HW + compra inicial (final)      963       153         303    13         1139             89%       42.81
-                        Reversión mul SW      796       102         228    12          947             74%   45.9-47.6
-               Reversión mulc (custom-0)      945       133         310    12         1096             86%   44.1-46.0
-                      Reversión mul MMIO      975       133         374    12         1181             92%   43.4-47.4
+                   Donchian ingenua (SW)      799       102         228    12          948             74%       47.17
+                Donchian histograma (SW)      799       102         228    12          948             74%   45.9-47.6
+                      Donchian unidad HW      963       153         303    13         1139             89%   43.1-45.8
+    Donchian HW + compra inicial (final)      963       153         303    13         1139             89%   43.1-45.8
+                        Reversión mul SW      799       102         228    12          948             74%   43.5-46.5
+               Reversión mulc (custom-0)      944       133         310    12         1095             86%   43.2-45.2
+                      Reversión mul MMIO     1006       133         374    12         1211             95%   39.9-43.9
   Unidad HW v1 (histogramas, descartada)     1208       220           -    15         1478  115% (no cabe)           -
