@@ -130,6 +130,11 @@ generado: `iceprog bitstreams/<nombre>.bin`.
 | `DON_UNIT` | 0, 1 | 1 = unidad de ventana deslizante (canal de Donchian) |
 | `PROG` | nombre en `sw/` sin `.s` | Programa (por defecto, el que corresponde a `MUL_MODE`) |
 
+**Reinicio entre series:** el SoC solo tiene reset de encendido. Antes de cada serie hay que
+desconectar y volver a conectar el USB de la Go Board: la placa carga el programa desde su
+memoria flash y parte desde cero (compra inicial, contador y ventana vacíos). Si no se hace,
+el programa arrastra el estado de la serie anterior.
+
 Versiones disponibles:
 
 | Versión | Comando |
