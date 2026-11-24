@@ -1,7 +1,9 @@
 % Generado por model/metricas.py
+% Requiere \usepackage{booktabs} y \usepackage{adjustbox}
 \begin{table}[htbp]
 \centering
 \small
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrrrrrrr}
 \toprule
 Base & Variante & f (kernel) & Kernel base & Kernel var. & s\_k & Predicho & Medido & Medido peor caso \\
@@ -13,5 +15,6 @@ Reversión mul SW & Reversión mulc (custom-0) & 0.819 & 379.0 & 36.0 & 10.5 & 3
 Reversión mul SW & Reversión mul MMIO & 0.819 & 379.0 & 70.4 & 5.4 & 3.01x & 3.01x & 3.38x \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \caption{Ley de Amdahl: fracción del kernel en la versión base, speedup del kernel, speedup predicho y medido (ciclos de procesador por tick, promedio; última columna: peor caso).}
 \end{table}

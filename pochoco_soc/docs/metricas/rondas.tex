@@ -1,7 +1,9 @@
 % Generado por model/metricas.py
+% Requiere \usepackage{booktabs} y \usepackage{adjustbox}
 \begin{table}[htbp]
 \centering
 \small
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrr}
 \toprule
 Versión & Ronda 1 (249762 ciclos) & Ronda 2 (24762 ciclos) & Ronda 3 (2262 ciclos) \\
@@ -9,10 +11,12 @@ Versión & Ronda 1 (249762 ciclos) & Ronda 2 (24762 ciclos) & Ronda 3 (2262 cicl
 Donchian ingenua (SW) & 3.0\% OK & 30.5\% OK & 334.2\% NO \\
 Donchian histograma (SW) & 0.3\% OK & 2.6\% OK & 28.7\% OK \\
 Donchian unidad HW & 0.0\% OK & 0.2\% OK & 2.0\% OK \\
+Donchian HW + compra inicial (final) & 0.0\% OK & 0.2\% OK & 2.1\% OK \\
 Reversión mul SW & 0.3\% OK & 3.0\% OK & 33.0\% OK \\
 Reversión mulc (custom-0) & 0.1\% OK & 0.7\% OK & 7.6\% OK \\
 Reversión mul MMIO & 0.1\% OK & 0.9\% OK & 9.8\% OK \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \caption{Peor caso de ciclos por tick como porcentaje de los ciclos disponibles en cada ronda.}
 \end{table}

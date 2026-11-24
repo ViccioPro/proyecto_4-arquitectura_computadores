@@ -2,6 +2,7 @@ Versión,IC prom,IC peor,Ciclos prom,Ciclos peor,CPI,Latencia peor,Tiempo prom (
 Donchian ingenua (SW),2880.9,3040,7186.0,7561,2.49,7550,287.44,302.44
 Donchian histograma (SW),43.2,264,100.8,650,2.33,27,4.03,26.00
 Donchian unidad HW,16.0,19,38.4,45,2.40,35,1.53,1.80
+Donchian HW + compra inicial (final),17.0,20,40.4,47,2.37,37,1.62,1.88
 Reversión mul SW,205.7,336,462.5,746,2.25,743,18.50,29.84
 Reversión mulc (custom-0),41.6,57,121.5,173,2.92,170,4.86,6.92
 Reversión mul MMIO,64.0,92,153.9,221,2.40,218,6.16,8.84

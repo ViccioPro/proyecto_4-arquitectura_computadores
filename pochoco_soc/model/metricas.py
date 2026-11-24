@@ -62,18 +62,31 @@ def k_etiquetas(ini, fin):
     return ("etiquetas", ini, fin)
 
 
+# Canal de Donchian sin y con compra inicial (estrategia final: con compra inicial)
+def DonSin():
+    return M.EstrategiaDonchian(compra_inicial=False)
+
+
+def DonIni():
+    return M.EstrategiaDonchian(compra_inicial=True)
+
+
 PROGRAMAS = {
-    # Estrategia vigente: canal de Donchian
-    "don_ingenua": dict(src="trade_don_naive.s", ref=M.EstrategiaDonchian, mul_mode=0, don=0,
+    # Canal de Donchian: tres implementaciones del mismo canal (sin compra
+    # inicial) para comparar las alternativas de hardware, y la versión final
+    "don_ingenua": dict(src="trade_don_naive.s", ref=DonSin, mul_mode=0, don=0,
                         titulo="Donchian ingenua (SW)",
                         kernel=[k_rango("li   s1, 0", "bgeu s1, a3, mantener"),
                                 k_rango("li   s1, 256", "bgeu a3, s1, mantener")]),
-    "don_hist": dict(src="trade_don.s", ref=M.EstrategiaDonchian, mul_mode=0, don=0,
+    "don_hist": dict(src="trade_don.s", ref=DonSin, mul_mode=0, don=0,
                      titulo="Donchian histograma (SW)",
                      kernel=[k_etiquetas("actualizar", "guardar")]),
-    "don_hw": dict(src="trade_don_hw.s", ref=M.EstrategiaDonchian, mul_mode=0, don=1,
+    "don_hw": dict(src="trade_don_hw.s", ref=DonSin, mul_mode=0, don=1,
                    titulo="Donchian unidad HW",
                    kernel=[k_regex(r"\(s1\)|bnez t0, esp_unidad")]),
+    "don_ini": dict(src="trade_don_ini.s", ref=DonIni, mul_mode=0, don=1,
+                    titulo="Donchian HW + compra inicial (final)",
+                    kernel=[k_regex(r"\(s1\)|bnez t0, esp_unidad")]),
     # Estrategia anterior (reversión a la media): variantes del multiplicador
     "rev_sw": dict(src="trade.s", ref=M.EstrategiaReversion, mul_mode=0, don=0,
                    titulo="Reversión mul SW",
@@ -89,7 +102,8 @@ PROGRAMAS = {
 # Nombre del reporte de make pnr para cada programa (reports/<nombre>_*)
 REPORTES = {
     "don_ingenua": "trade_don_naive_m0_r1", "don_hist": "trade_don_m0_r1",
-    "don_hw": "trade_don_hw_m0_r1_d1", "rev_sw": "trade_m0_r1",
+    "don_hw": "trade_don_hw_m0_r1_d1", "don_ini": "trade_don_ini_m0_r1_d1",
+    "rev_sw": "trade_m0_r1",
     "rev_mulc": "trade_mulc_m1_r1", "rev_mmio": "trade_mmio_m2_r1",
 }
 
@@ -187,12 +201,14 @@ def tabla_tex(nombre, encabezado, filas, caption, alineacion=None):
     esc = lambda x: str(x).replace("_", r"\_").replace("%", r"\%").replace("&", r"\&")
     with open(os.path.join(OUT, nombre), "w") as f:
         f.write("% Generado por model/metricas.py\n")
+        f.write("% Requiere \\usepackage{booktabs} y \\usepackage{adjustbox}\n")
         f.write("\\begin{table}[htbp]\n\\centering\n\\small\n")
+        f.write("\\begin{adjustbox}{max width=\\linewidth}\n")
         f.write(f"\\begin{{tabular}}{{{alineacion}}}\n\\toprule\n")
         f.write(" & ".join(esc(e) for e in encabezado) + " \\\\\n\\midrule\n")
         for fila in filas:
             f.write(" & ".join(esc(x) for x in fila) + " \\\\\n")
-        f.write("\\bottomrule\n\\end{tabular}\n")
+        f.write("\\bottomrule\n\\end{tabular}\n\\end{adjustbox}\n")
         f.write(f"\\caption{{{caption}}}\n\\end{{table}}\n")
 
 
@@ -217,7 +233,8 @@ def seccion_estrategias(datos):
     log("=" * 70)
     log("1. ALGORITMO VS. REFERENCIAS (serie completa, reglas del testbench)")
     log("=" * 70)
-    estr = [("Donchian 500/250", M.EstrategiaDonchian), ("Reversión N=256", M.EstrategiaReversion)]
+    estr = [("Donchian + compra inicial", DonIni), ("Donchian 500/250", DonSin),
+            ("Reversión N=256", M.EstrategiaReversion)]
     enc = ["Serie", "No operar", "Comprar y mantener"] + [n for n, _ in estr] + ["Órdenes Donchian", "Comisiones Donchian", "Pérd. máx. Donchian"]
     filas = []
     resumen = {n: [] for n, _ in estr}
@@ -239,9 +256,10 @@ def seccion_estrategias(datos):
         gana = sum(1 for a, b in v if a > max(b, 10000))
         log(f"  {n}: media {st.mean(w):.0f}, peor {min(w)}, gana a ambas referencias en {gana}/{len(v)}")
     csv_out("estrategias.csv", enc, filas)
-    tabla_tex("estrategias.tex", enc[:5], [f[:5] for f in filas],
-              "Patrimonio final por serie: estrategia vigente (Donchian 500/250), estrategia "
-              "anterior (reversión a la media) y referencias. Capital inicial \\$10\\,000, comisión \\$5.")
+    tabla_tex("estrategias.tex", enc[:6], [f[:6] for f in filas],
+              "Patrimonio final por serie: estrategia final (Donchian 500/250 con compra inicial), "
+              "Donchian sin compra inicial, estrategia anterior (reversión a la media) y "
+              "referencias. Capital inicial \\$10\\,000, comisión \\$5.")
 
 
 def _decs(cls, precios):
@@ -373,6 +391,8 @@ def seccion_roofline(res):
     filas = []
     puntos = {"don": [], "mul": []}
     for prog, r in res.items():
+        if prog == "don_ini":            # mismo kernel que don_hw (solo cambia la compra inicial)
+            continue
         F = r["filas"]
         kc = st.mean(f["k_ciclos"] for f in F)
         kbytes = st.mean(f["k_bytes"] for f in F)

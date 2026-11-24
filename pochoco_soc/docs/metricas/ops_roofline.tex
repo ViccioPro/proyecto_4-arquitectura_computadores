@@ -1,7 +1,9 @@
 % Generado por model/metricas.py
+% Requiere \usepackage{booktabs} y \usepackage{adjustbox}
 \begin{table}[htbp]
 \centering
 \small
+\begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{lrrrrrrl}
 \toprule
 Versión & Ops útiles/tick & Instr. kernel & Ciclos kernel & Bytes kernel & Intensidad (ops/B) & Mops/s útiles & Nota \\
@@ -14,5 +16,6 @@ Reversión mulc (custom-0) & 2.9 & 2.9 & 36.0 & 0.0 & inf & 2.010 & kernel en el
 Reversión mul MMIO & 2.9 & 26.4 & 70.4 & 70.2 & 0.04 & 1.029 & kernel en el procesador + multiplicador \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \caption{Operaciones útiles por segundo e intensidad operacional del kernel de cada versión (promedios por tick). Donchian: operación útil = procesar un precio de la ventana (750 por tick). Multiplicación: operación útil = un cuadrado del algoritmo.}
 \end{table}
