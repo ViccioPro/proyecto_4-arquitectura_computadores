@@ -20,17 +20,21 @@ cd pochoco_soc
 
 | | |
 |---|---|
-| **Estrategia** | Canal de Donchian 500/250 (seguimiento de tendencia por ruptura de canal) |
-| **Regla** | Sin acciones: compra 63 si el precio supera el máximo de los 500 anteriores. Con acciones: vende 63 si cae bajo el mínimo de los 250 anteriores. Primeros 500 precios: mantener |
-| **Configuración final** | `MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw` (unidad de ventana deslizante en hardware) |
-| **Bitstream** | `bitstreams/trade_don_hw_m0_r1_d1.bin` |
-| **Recursos** | 1118 / 1280 celdas lógicas (87 %), 13 / 16 BRAM, Fmax 44,3–47,0 MHz (5 semillas) |
-| **Por tick** | Latencia precio → decisión ≤ 39 ciclos (RTL); procesador ocupado ≤ 45 ciclos; la unidad trabaja 502 ciclos en paralelo |
-| **Resultados** | Patrimonio medio 11 033 en 9 series de práctica (comprar y mantener: 9 326); supera a comprar y mantener en 8/9 series |
+| **Estrategia** | Canal de Donchian 500/250 con compra inicial (seguimiento de tendencia por ruptura de canal) |
+| **Regla** | Primer precio: compra 63. Sin acciones: compra 63 si el precio supera el máximo de los 500 anteriores. Con acciones: vende 63 si cae bajo el mínimo de los 250 anteriores. Precios 2 a 500: mantener |
+| **Configuración final** | `MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini` (unidad de ventana deslizante en hardware) |
+| **Bitstream** | `bitstreams/trade_don_ini_m0_r1_d1.bin` (no se sube al repositorio; se genera con `make bin`) |
+| **Recursos** | 1139 / 1280 celdas lógicas (89 %), 13 / 16 BRAM, Fmax 43,1–45,8 MHz (5 semillas) |
+| **Por tick** | Latencia precio → decisión ≤ 43 ciclos (RTL); procesador ocupado ≤ 47 ciclos; la unidad trabaja 502 ciclos en paralelo |
+| **Resultados** | Patrimonio medio 11 525 en 9 series de práctica (comprar y mantener: 9 326); supera a comprar y mantener en 8/9 series. Serie Meta completa en RTL: 11 701 |
 
-La estrategia se eligió con validación cruzada sobre 9 series (sección 6). La estrategia
-anterior (reversión a la media) y las variantes del multiplicador se conservan como
-alternativas medidas; la reversión a la media es la que se probó con la FPGA maestra el 18/11.
+El canal se eligió con validación cruzada sobre 9 series (sección 6). La compra inicial
+("time in the market") sube el patrimonio medio de las series de práctica de 11 033 a 11 525, pero
+la peor serie baja de 9 011 a 8 344, y en tramos que empiezan en otros puntos de las series no hay
+diferencia en promedio (detalle en el informe). La versión sin compra inicial (`trade_don_hw.s`)
+se conserva para comparar las alternativas de hardware. La estrategia anterior (reversión a la
+media) y las variantes del multiplicador se conservan como alternativas medidas; la reversión a la
+media es la que se probó con la FPGA maestra el 18/11.
 
 ---
 
@@ -51,7 +55,8 @@ pochoco_soc/
 │   ├── espino_core/         core Espino (PC de 11 bits, instrucción custom-0 mulc)
 │   └── descartado/          unidad Donchian con histogramas (no cabe en la FPGA)
 ├── sw/
-│   ├── trade_don_hw.s       ★ programa final (usa la unidad Donchian)
+│   ├── trade_don_ini.s      ★ programa final (unidad Donchian + compra inicial)
+│   ├── trade_don_hw.s       Donchian con la unidad, sin compra inicial
 │   ├── trade_don.s          Donchian solo software, con histogramas
 │   ├── trade_don_naive.s    Donchian solo software, recorriendo el canal (línea base)
 │   ├── trade.s, trade_mulc.s, trade_mmio.s   estrategia anterior (reversión a la media)
@@ -94,7 +99,7 @@ Versiones usadas (salida de `make versiones`, guardada en `docs/versiones.txt`):
 ## 4. Ensamblar `trade.s`
 
 ```bash
-python3 assembler_v3.py sw/trade_don_hw.s sw/trade.hex -l sw/trade_don_hw.lst
+python3 assembler_v3.py sw/trade_don_ini.s sw/trade.hex -l sw/trade_don_ini.lst
 ```
 
 - `sw/trade.hex` es el archivo que leen `trader_top.v` (síntesis) y el testbench. El Makefile lo
@@ -110,8 +115,8 @@ python3 assembler_v3.py sw/trade_don_hw.s sw/trade.hex -l sw/trade_don_hw.lst
 ## 5. Sintetizar y programar la placa
 
 ```bash
-make bin  MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw     # genera bitstreams/trade_don_hw_m0_r1_d1.bin
-make prog MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw     # genera y programa la Go Board (USB)
+make bin  MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini    # genera bitstreams/trade_don_ini_m0_r1_d1.bin
+make prog MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini    # genera y programa la Go Board (USB)
 ```
 
 `make bin` ensambla el programa, sintetiza con yosys, hace place & route con nextpnr a 25 MHz y
@@ -129,7 +134,8 @@ Versiones disponibles:
 
 | Versión | Comando |
 |---|---|
-| ★ Donchian con unidad HW (final) | `make bin MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw` |
+| ★ Donchian con unidad HW y compra inicial (final) | `make bin MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini` |
+| Donchian con unidad HW, sin compra inicial | `make bin MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw` |
 | Donchian solo software (histograma) | `make bin MUL_MODE=0 PROG=trade_don` |
 | Donchian solo software (ingenua) | `make bin MUL_MODE=0 PROG=trade_don_naive` |
 | Reversión, multiplicación por software | `make bin MUL_MODE=0 PROG=trade` |
@@ -137,7 +143,7 @@ Versiones disponibles:
 | Reversión, multiplicador MMIO | `make bin MUL_MODE=2 PROG=trade_mmio` |
 | Prueba de conexión | `make bin MUL_MODE=0 PROG=trade_min` |
 
-Fmax con 5 semillas de place & route: `make fmax MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw`.
+Fmax con 5 semillas de place & route: `make fmax MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini`.
 
 ---
 
@@ -146,13 +152,19 @@ Fmax con 5 semillas de place & route: `make fmax MUL_MODE=0 DON_UNIT=1 PROG=trad
 ### Testbench del curso (sistema completo)
 
 ```bash
-make sim MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw
+make sim MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini
 ```
 
 Ensambla, compila con iverilog y corre `tb/tb_proyecto_4.sv` (emula a la FPGA maestra: ronda 3,
 2000 ticks), y luego ejecuta `model/verificar.py`, que compara **tick por tick** las decisiones
 del RTL (`decisiones.csv`) con la versión de referencia. Debe terminar con `4/4` y
-`OK: trade.s toma exactamente las mismas decisiones que el modelo`.
+`OK: trade.s toma exactamente las mismas decisiones que el modelo`. Con `practica_meta.csv` (la
+serie configurada), la versión final termina con 11 244 en 2000 ticks y 11 701 en la serie completa
+(`NTICKS = 20000`).
+
+El modelo aplica la compra inicial por defecto. Para verificar los programas sin compra inicial
+(`trade_don_hw`, `trade_don`, `trade_don_naive`) se define `COMPRA_INICIAL=0`, por ejemplo:
+`env COMPRA_INICIAL=0 make sim MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw`.
 
 La serie se elige en la línea `SERIE` de `tb/tb_proyecto_4.sv`. Nota: el reset de encendido dura
 65 535 ciclos (2,6 ms) y los precios enviados durante ese tiempo no llegan al procesador;
@@ -174,7 +186,7 @@ La unidad descartada se puede probar con:
 ```bash
 make modelo                                            # estrategia vs. referencias en practica.csv
 python3 model/estrategia.py tb/series/practica_tesla_2022.csv
-make medir MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw     # verifica y mide ciclos en las 9 series
+make medir MUL_MODE=0 DON_UNIT=1 PROG=trade_don_ini    # verifica y mide ciclos en las 9 series
 make metricas                                          # tablas y gráficos del informe
 ```
 
@@ -193,13 +205,17 @@ Mediciones con el simulador del Espino en las 9 series (peor caso por tick; deta
 
 | Versión | Celdas | BRAM | Fmax (MHz) | Ciclos por tick (peor) | Ronda 3 (2262 ciclos) |
 |---|---|---|---|---|---|
-| Donchian ingenua (SW) | 947 | 12 | 47,2 | 7561 | ✗ (334 %) |
-| Donchian histograma (SW) | 947 | 12 | 45,9–47,6 | 650 | ✓ (29 %) |
-| ★ Donchian unidad HW | 1118 | 13 | 44,3–47,0 | 45 | ✓ (2 %) |
+| Donchian ingenua (SW) | 948 | 12 | 43,5–46,5 | 7561 | ✗ (334 %) |
+| Donchian histograma (SW) | 948 | 12 | 43,5–46,5 | 650 | ✓ (29 %) |
+| Donchian unidad HW | 1139 | 13 | 43,1–45,8 | 45 | ✓ (2 %) |
+| ★ Donchian unidad HW + compra inicial (final) | 1139 | 13 | 43,1–45,8 | 47 | ✓ (2 %) |
 | Unidad HW v1, histogramas | 1478 | 15 | — | — | no cabe en la HX1K |
-| Reversión, mul SW | 947 | 12 | 45,9–47,6 | 746 | ✓ (33 %) |
-| Reversión, `mulc` | 1096 | 12 | 44,1–46,0 | 173 | ✓ (8 %) |
-| Reversión, mul MMIO | 1181 | 12 | 43,4–47,4 | 221 | ✓ (10 %) |
+| Reversión, mul SW | 948 | 12 | 43,5–46,5 | 746 | ✓ (33 %) |
+| Reversión, `mulc` | 1095 | 12 | 43,2–45,2 | 173 | ✓ (8 %) |
+| Reversión, mul MMIO | 1211 | 12 | 39,9–43,9 | 221 | ✓ (10 %) |
+
+Las versiones solo software comparten el mismo hardware (diseño base), y las dos versiones con la
+unidad también; por eso tienen los mismos recursos.
 
 Otras decisiones de diseño:
 - **Reducción de área:** PC de 32 a 11 bits y contador de ciclos opcional (−255 celdas).

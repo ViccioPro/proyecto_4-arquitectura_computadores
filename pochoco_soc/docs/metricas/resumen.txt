@@ -87,8 +87,8 @@
 6. RECURSOS (desde reports/; generar con make pnr ...)
 ======================================================================
                                  Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)            % LC  Fmax (MHz)
-                   Donchian ingenua (SW)      799       102         228    12          948             74%       47.17
-                Donchian histograma (SW)      799       102         228    12          948             74%   45.9-47.6
+                   Donchian ingenua (SW)      799       102         228    12          948             74%   43.5-46.5
+                Donchian histograma (SW)      799       102         228    12          948             74%   43.5-46.5
                       Donchian unidad HW      963       153         303    13         1139             89%   43.1-45.8
     Donchian HW + compra inicial (final)      963       153         303    13         1139             89%   43.1-45.8
                         Reversión mul SW      799       102         228    12          948             74%   43.5-46.5
