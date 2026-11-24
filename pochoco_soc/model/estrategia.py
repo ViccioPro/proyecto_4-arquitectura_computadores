@@ -23,7 +23,11 @@ stop-loss no se evalúa (16*var no cabe en 32 bits, y además ya es mayor
 que cualquier d^2 posible, así que la condición sería falsa igual).
 
 ESTRATEGIA VIGENTE (21/11): canal de Donchian 500/250 (EstrategiaDonchian),
-elegida por robustez en 9 series con validación cruzada. La reversión a la
+elegida por robustez en 9 series con validación cruzada.
+Desde el 24/11 con COMPRA INICIAL ("time in the market"): compra 63 con el
+primer precio y luego sigue el canal (sw/trade_don_ini.s). Para verificar
+la versión sin compra inicial (sw/trade_don_hw.s, sw/trade_don.s) se
+define la variable de entorno COMPRA_INICIAL=0. La reversión a la
 media (EstrategiaReversion) se conserva como referencia: es la que se probó
 con la FPGA maestra el 18/11.
 
@@ -33,6 +37,7 @@ Uso:
 """
 import csv
 import argparse
+import os
 
 N = 256
 K2_ENTRADA = 2          # (1,41 sigma)^2
@@ -40,6 +45,8 @@ K2_SALIDA = 1           # (1 sigma)^2
 K2_STOP = 16            # (4 sigma)^2
 CAJA0 = 10000
 COMISION = 5
+# Compra inicial (1 = sw/trade_don_ini.s, 0 = sw/trade_don_hw.s / trade_don.s)
+COMPRA_INICIAL = os.environ.get("COMPRA_INICIAL", "1") != "0"
 BUY63 = 0x7F            # 01 111111
 SELL63 = 0xBF           # 10 111111
 HOLD = 0x00
@@ -110,21 +117,28 @@ class EstrategiaDonchian:
     - Sin posición: compra 63 si p > H   (rompe el máximo de 500 ticks)
     - Con posición: vende 63 si p < L    (rompe el mínimo de 250 ticks)
     - En otro caso: mantener. Primeros 500 precios: mantener.
+    - Con compra inicial: el primer precio compra 63 (queda con posición).
     """
 
-    def __init__(self):
+    def __init__(self, compra_inicial=None):
         self.hist = []
         self.dentro = False
+        self.primero = True
+        self.compra_inicial = COMPRA_INICIAL if compra_inicial is None else compra_inicial
 
     def tick(self, p):
         dec = HOLD
-        if len(self.hist) >= LE:
+        if self.primero and self.compra_inicial:
+            self.dentro = True
+            dec = BUY63
+        elif len(self.hist) >= LE:
             if not self.dentro and p > max(self.hist[-LE:]):
                 self.dentro = True
                 dec = BUY63
             elif self.dentro and p < min(self.hist[-LX:]):
                 self.dentro = False
                 dec = SELL63
+        self.primero = False
         self.hist.append(p)
         if len(self.hist) > LE:
             del self.hist[0]
@@ -210,7 +224,7 @@ def main():
     a = ap.parse_args()
     precios = leer_serie(a.serie)[:a.ticks]
     filas = [
-        ("Estrategia (Donchian 500/250)", simular(precios, decisiones_estrategia)),
+        (f"Donchian 500/250{' + compra ini.' if COMPRA_INICIAL else ''}", simular(precios, decisiones_estrategia)),
         ("No operar", simular(precios, referencia_no_operar)),
         ("Comprar y mantener", referencia_comprar_mantener(precios)),
     ]
