@@ -47,6 +47,9 @@ CAJA0 = 10000
 COMISION = 5
 # Compra inicial (1 = sw/trade_don_ini.s, 0 = sw/trade_don_hw.s / trade_don.s)
 COMPRA_INICIAL = os.environ.get("COMPRA_INICIAL", "1") != "0"
+# Meta de patrimonio (sw/trade_don_meta.s): si el patrimonio llega a META, vende
+# todo y no vuelve a operar. 0 = desactivada (trade_don_ini.s y anteriores).
+META = int(os.environ.get("META", "0"))
 BUY63 = 0x7F            # 01 111111
 SELL63 = 0xBF           # 10 111111
 HOLD = 0x00
@@ -118,17 +121,33 @@ class EstrategiaDonchian:
     - Con posición: vende 63 si p < L    (rompe el mínimo de 250 ticks)
     - En otro caso: mantener. Primeros 500 precios: mantener.
     - Con compra inicial: el primer precio compra 63 (queda con posición).
+    - Con meta (meta > 0): lleva su propia contabilidad, igual a la de la
+      maestra; si el patrimonio caja + acciones*p llega a la meta, vende todo
+      y no vuelve a operar en el resto de la serie.
     """
 
-    def __init__(self, compra_inicial=None):
+    def __init__(self, compra_inicial=None, meta=None):
         self.hist = []
         self.dentro = False
         self.primero = True
         self.compra_inicial = COMPRA_INICIAL if compra_inicial is None else compra_inicial
+        self.meta = META if meta is None else meta
+        self.cuenta = Mercado()      # contabilidad propia (la orden se ejecuta al precio siguiente)
+        self.pendiente = HOLD
+        self.asegurado = False
 
     def tick(self, p):
         dec = HOLD
-        if self.primero and self.compra_inicial:
+        if self.meta:
+            self.cuenta.ejecutar(self.pendiente, p)
+        if self.asegurado:
+            pass
+        elif self.meta and self.cuenta.w >= self.meta:
+            self.asegurado = True
+            if self.cuenta.acciones > 0:
+                self.dentro = False
+                dec = SELL63
+        elif self.primero and self.compra_inicial:
             self.dentro = True
             dec = BUY63
         elif len(self.hist) >= LE:
@@ -139,6 +158,7 @@ class EstrategiaDonchian:
                 self.dentro = False
                 dec = SELL63
         self.primero = False
+        self.pendiente = dec
         self.hist.append(p)
         if len(self.hist) > LE:
             del self.hist[0]
@@ -224,7 +244,7 @@ def main():
     a = ap.parse_args()
     precios = leer_serie(a.serie)[:a.ticks]
     filas = [
-        (f"Donchian 500/250{' + compra ini.' if COMPRA_INICIAL else ''}", simular(precios, decisiones_estrategia)),
+        (f"Donchian 500/250{' + compra ini.' if COMPRA_INICIAL else ''}{f' + meta {META}' if META else ''}", simular(precios, decisiones_estrategia)),
         ("No operar", simular(precios, referencia_no_operar)),
         ("Comprar y mantener", referencia_comprar_mantener(precios)),
     ]
