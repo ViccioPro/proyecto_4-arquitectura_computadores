@@ -24,6 +24,8 @@ que cualquier d^2 posible, así que la condición sería falsa igual).
 
 ESTRATEGIA VIGENTE (21/11): canal de Donchian 500/250 (EstrategiaDonchian),
 elegida por robustez en 9 series con validación cruzada.
+Desde el 25/11 la versión final agrega una META DE PATRIMONIO de 13500
+(sw/trade_don_meta.s): al llegar a la meta vende todo y deja de operar.
 Desde el 24/11 con COMPRA INICIAL ("time in the market"): compra 63 con el
 primer precio y luego sigue el canal (sw/trade_don_ini.s). Para verificar
 la versión sin compra inicial (sw/trade_don_hw.s, sw/trade_don.s) se
@@ -47,9 +49,10 @@ CAJA0 = 10000
 COMISION = 5
 # Compra inicial (1 = sw/trade_don_ini.s, 0 = sw/trade_don_hw.s / trade_don.s)
 COMPRA_INICIAL = os.environ.get("COMPRA_INICIAL", "1") != "0"
-# Meta de patrimonio (sw/trade_don_meta.s): si el patrimonio llega a META, vende
-# todo y no vuelve a operar. 0 = desactivada (trade_don_ini.s y anteriores).
-META = int(os.environ.get("META", "0"))
+# Meta de patrimonio (sw/trade_don_meta.s, versión final): si el patrimonio llega
+# a META, vende todo y no vuelve a operar. Para verificar trade_don_ini.s se usa
+# META=0; para trade_don_hw.s / trade_don.s, META=0 y COMPRA_INICIAL=0.
+META = int(os.environ.get("META", "13500"))
 BUY63 = 0x7F            # 01 111111
 SELL63 = 0xBF           # 10 111111
 HOLD = 0x00

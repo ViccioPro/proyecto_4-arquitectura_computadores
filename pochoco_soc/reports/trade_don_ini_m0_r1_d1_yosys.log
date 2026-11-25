@@ -3935,6 +3935,6 @@ Found and reported 0 problems.
       963   SB_LUT4
        13   SB_RAM40_4K
 
-End of script. Logfile hash: ac6e244a65, time: 2.15s, user: 1.15s, system: 0.06s, MEM: 50.15 MB peak
+End of script. Logfile hash: ac6e244a65, time: 2.16s, user: 1.17s, system: 0.05s, MEM: 50.36 MB peak
 Yosys 0.71+77 (git sha1 11d972c20, Release, Clang /usr/bin/clang++ 21.1.8)
 Time spent: 43% 1x abc9_exe (0 sec), 8% 27x opt_clean (0 sec), ...

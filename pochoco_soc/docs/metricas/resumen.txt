@@ -1,16 +1,17 @@
 ======================================================================
 1. ALGORITMO VS. REFERENCIAS (serie completa, reglas del testbench)
 ======================================================================
-         Serie  No operar  Comprar y mantener  Donchian + compra inicial  Donchian 500/250  Reversión N=256  Órdenes Donchian  Comisiones Donchian  Pérd. máx. Donchian
-      practica      10000                6497                       8344              9011            12211                29                  145                 6515
-  amd_2022_ene      10000                8315                      13688             12410             4638                33                  165                 3356
-  amd_2022_may      10000                9647                       9500             10371             7511                42                  210                 3294
-    apple_2022      10000               11063                      13823             13770             6682                28                  140                 2878
-    apple_2023      10000               10371                      11559              9358            12048                36                  180                 5248
-     meta_2022      10000                9695                      11638              9949            18217                28                  140                 2656
-  netflix_2022      10000                9179                      11831             11595             8520                30                  150                 4481
-  netflix_2023      10000                9170                       9736             10504            12162                35                  175                 5103
-    tesla_2022      10000                9995                      13604             12329             6294                32                  160                 3471
+         Serie  No operar  Comprar y mantener  Donchian + compra ini. + meta 13500  Donchian + compra inicial  Donchian 500/250  Reversión N=256  Órdenes Donchian  Comisiones Donchian  Pérd. máx. Donchian
+      practica      10000                6497                                13468                       8344              9011            12211                12                   60                 4692
+  amd_2022_ene      10000                8315                                13481                      13688             12410             4638                24                  120                 3356
+  amd_2022_may      10000                9647                                 9500                       9500             10371             7511                42                  210                 3294
+    apple_2022      10000               11063                                13624                      13823             13770             6682                 6                   30                  945
+    apple_2023      10000               10371                                13445                      11559              9358            12048                 4                   20                 1459
+     meta_2022      10000                9695                                13449                      11638              9949            18217                24                  120                 2656
+  netflix_2022      10000                9179                                13508                      11831             11595             8520                 6                   30                 1156
+  netflix_2023      10000                9170                                 9736                       9736             10504            12162                35                  175                 5103
+    tesla_2022      10000                9995                                13604                      13604             12329             6294                32                  160                 3471
+  Donchian + compra ini. + meta 13500: media 12646, peor 9500, gana a ambas referencias en 7/9
   Donchian + compra inicial: media 11525, peor 8344, gana a ambas referencias en 6/9
   Donchian 500/250: media 11033, peor 9011, gana a ambas referencias en 6/9
   Reversión N=256: media 9809, peor 4638, gana a ambas referencias en 4/9
@@ -21,33 +22,36 @@
   Donchian ingenua (SW)        ticks   1000  diferencias con el modelo: 0
   Donchian histograma (SW)     ticks 175500  diferencias con el modelo: 0
   Donchian unidad HW           ticks 175500  diferencias con el modelo: 0
-  Donchian HW + compra inicial (final) ticks 175500  diferencias con el modelo: 0
+  Donchian HW + compra inicial ticks 175500  diferencias con el modelo: 0
+  Donchian HW + compra ini. + meta (final) ticks 175500  diferencias con el modelo: 0
   Reversión mul SW             ticks 177696  diferencias con el modelo: 0
   Reversión mulc (custom-0)    ticks 177696  diferencias con el modelo: 0
   Reversión mul MMIO           ticks 177696  diferencias con el modelo: 0
 
   'Ciclos' = procesador ocupado por tick (desde que llega el precio hasta
   que vuelve a esperar el siguiente). 'Latencia' = hasta escribir DECISION.
-                               Versión  IC prom  IC peor  Ciclos prom  Ciclos peor   CPI  Latencia peor  Tiempo prom (us)  Tiempo peor (us)
-                 Donchian ingenua (SW)   2880.9     3040       7186.0         7561  2.49           7550            287.44            302.44
-              Donchian histograma (SW)     43.2      264        100.8          650  2.33             27              4.03             26.00
-                    Donchian unidad HW     16.0       19         38.4           45  2.40             35              1.53              1.80
-  Donchian HW + compra inicial (final)     17.0       20         40.4           47  2.37             37              1.62              1.88
-                      Reversión mul SW    205.7      336        462.5          746  2.25            743             18.50             29.84
-             Reversión mulc (custom-0)     41.6       57        121.5          173  2.92            170              4.86              6.92
-                    Reversión mul MMIO     64.0       92        153.9          221  2.40            218              6.16              8.84
+                                   Versión  IC prom  IC peor  Ciclos prom  Ciclos peor   CPI  Latencia peor  Tiempo prom (us)  Tiempo peor (us)
+                     Donchian ingenua (SW)   2880.9     3040       7186.0         7561  2.49           7550            287.44            302.44
+                  Donchian histograma (SW)     43.2      264        100.8          650  2.33             27              4.03             26.00
+                        Donchian unidad HW     16.0       19         38.4           45  2.40             35              1.53              1.80
+              Donchian HW + compra inicial     17.0       20         40.4           47  2.37             37              1.62              1.88
+  Donchian HW + compra ini. + meta (final)     26.0      441         60.6          957  2.33            950              2.42             38.28
+                          Reversión mul SW    205.7      336        462.5          746  2.25            743             18.50             29.84
+                 Reversión mulc (custom-0)     41.6       57        121.5          173  2.92            170              4.86              6.92
+                        Reversión mul MMIO     64.0       92        153.9          221  2.40            218              6.16              8.84
 
 ======================================================================
 3. PEOR CASO VS. PERÍODO DE CADA RONDA (ciclos disponibles = T - SPI)
 ======================================================================
-                               Versión  Ronda 1 (249762 ciclos)  Ronda 2 (24762 ciclos)  Ronda 3 (2262 ciclos)
-                 Donchian ingenua (SW)                  3.0% OK                30.5% OK              334.2% NO
-              Donchian histograma (SW)                  0.3% OK                 2.6% OK               28.7% OK
-                    Donchian unidad HW                  0.0% OK                 0.2% OK                2.0% OK
-  Donchian HW + compra inicial (final)                  0.0% OK                 0.2% OK                2.1% OK
-                      Reversión mul SW                  0.3% OK                 3.0% OK               33.0% OK
-             Reversión mulc (custom-0)                  0.1% OK                 0.7% OK                7.6% OK
-                    Reversión mul MMIO                  0.1% OK                 0.9% OK                9.8% OK
+                                   Versión  Ronda 1 (249762 ciclos)  Ronda 2 (24762 ciclos)  Ronda 3 (2262 ciclos)
+                     Donchian ingenua (SW)                  3.0% OK                30.5% OK              334.2% NO
+                  Donchian histograma (SW)                  0.3% OK                 2.6% OK               28.7% OK
+                        Donchian unidad HW                  0.0% OK                 0.2% OK                2.0% OK
+              Donchian HW + compra inicial                  0.0% OK                 0.2% OK                2.1% OK
+  Donchian HW + compra ini. + meta (final)                  0.4% OK                 3.9% OK               42.3% OK
+                          Reversión mul SW                  0.3% OK                 3.0% OK               33.0% OK
+                 Reversión mulc (custom-0)                  0.1% OK                 0.7% OK                7.6% OK
+                        Reversión mul MMIO                  0.1% OK                 0.9% OK                9.8% OK
 
 ======================================================================
 4. LEY DE AMDAHL (promedios por tick)
@@ -86,12 +90,13 @@
 ======================================================================
 6. RECURSOS (desde reports/; generar con make pnr ...)
 ======================================================================
-                                 Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)            % LC  Fmax (MHz)
-                   Donchian ingenua (SW)      799       102         228    12          948             74%   43.5-46.5
-                Donchian histograma (SW)      799       102         228    12          948             74%   43.5-46.5
-                      Donchian unidad HW      963       153         303    13         1139             89%   43.1-45.8
-    Donchian HW + compra inicial (final)      963       153         303    13         1139             89%   43.1-45.8
-                        Reversión mul SW      799       102         228    12          948             74%   43.5-46.5
-               Reversión mulc (custom-0)      944       133         310    12         1095             86%   43.2-45.2
-                      Reversión mul MMIO     1006       133         374    12         1211             95%   39.9-43.9
-  Unidad HW v1 (histogramas, descartada)     1208       220           -    15         1478  115% (no cabe)           -
+                                   Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)            % LC  Fmax (MHz)
+                     Donchian ingenua (SW)      799       102         228    12          948             74%   43.5-46.5
+                  Donchian histograma (SW)      799       102         228    12          948             74%   43.5-46.5
+                        Donchian unidad HW      963       153         303    13         1139             89%   43.1-45.8
+              Donchian HW + compra inicial      963       153         303    13         1139             89%   43.1-45.8
+  Donchian HW + compra ini. + meta (final)      963       153         303    13         1139             89%   43.1-45.8
+                          Reversión mul SW      799       102         228    12          948             74%   43.5-46.5
+                 Reversión mulc (custom-0)      944       133         310    12         1095             86%   43.2-45.2
+                        Reversión mul MMIO     1006       133         374    12         1211             95%   39.9-43.9
+    Unidad HW v1 (histogramas, descartada)     1208       220           -    15         1478  115% (no cabe)           -

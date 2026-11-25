@@ -73,8 +73,8 @@ Info:     at iteration #4, type ALL: wirelen solved = 686, spread = 6987, legal 
 Info:     at iteration #5, type ALL: wirelen solved = 1003, spread = 7000, legal = 8053; time = 0.02s
 Info:     at iteration #6, type ALL: wirelen solved = 996, spread = 7157, legal = 8287; time = 0.02s
 Info:     at iteration #7, type ALL: wirelen solved = 1040, spread = 7228, legal = 8077; time = 0.02s
-Info: HeAP Placer Time: 0.21s
-Info:   of which solving equations: 0.13s
+Info: HeAP Placer Time: 0.20s
+Info:   of which solving equations: 0.12s
 Info:   of which spreading cells: 0.01s
 Info:   of which strict legalisation: 0.04s
 
@@ -86,7 +86,7 @@ Info:   at iteration #15: temp = 0.000000, timing cost = 394, wirelen = 5438
 Info:   at iteration #20: temp = 0.000000, timing cost = 416, wirelen = 5351
 Info:   at iteration #25: temp = 0.000000, timing cost = 414, wirelen = 5322
 Info:   at iteration #29: temp = 0.000000, timing cost = 420, wirelen = 5314 
-Info: SA placement time 1.02s
+Info: SA placement time 1.01s
 
 Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 44.16 MHz (PASS at 25.00 MHz)
 
@@ -124,18 +124,18 @@ Info: Setting up routing queue.
 Info: Routing 3940 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      152        847 |  152   847 |      3201|       0.22       0.22|
-Info:       2000 |      356       1643 |  204   796 |      2503|       0.19       0.41|
-Info:       3000 |      737       2206 |  381   563 |      1953|       0.12       0.53|
-Info:       4000 |     1149       2794 |  412   588 |      1583|       0.18       0.71|
-Info:       5000 |     1640       3299 |  491   505 |      1275|       0.21       0.92|
-Info:       6000 |     2101       3808 |  461   509 |      1010|       0.27       1.19|
-Info:       7000 |     2606       4296 |  505   488 |       763|       0.25       1.44|
-Info:       8000 |     3085       4817 |  479   521 |       540|       0.30       1.73|
-Info:       9000 |     3485       5395 |  400   578 |        84|       0.24       1.98|
-Info:       9131 |     3519       5493 |   34    98 |         0|       0.05       2.03|
+Info:       1000 |      152        847 |  152   847 |      3201|       0.21       0.21|
+Info:       2000 |      356       1643 |  204   796 |      2503|       0.18       0.39|
+Info:       3000 |      737       2206 |  381   563 |      1953|       0.11       0.50|
+Info:       4000 |     1149       2794 |  412   588 |      1583|       0.17       0.67|
+Info:       5000 |     1640       3299 |  491   505 |      1275|       0.20       0.87|
+Info:       6000 |     2101       3808 |  461   509 |      1010|       0.25       1.12|
+Info:       7000 |     2606       4296 |  505   488 |       763|       0.24       1.36|
+Info:       8000 |     3085       4817 |  479   521 |       540|       0.29       1.65|
+Info:       9000 |     3485       5395 |  400   578 |        84|       0.24       1.89|
+Info:       9131 |     3519       5493 |   34    98 |         0|       0.05       1.94|
 Info: Routing complete.
-Info: Router1 time 2.03s
+Info: Router1 time 1.94s
 Info: Checksum: 0xb4026b7b
 
 Info: Critical path report for clock 'i_Clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
