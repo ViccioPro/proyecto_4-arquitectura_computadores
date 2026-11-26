@@ -3,6 +3,8 @@
 // cálculo directo (máximo de los últimos 500, mínimo de los últimos 250).
 // También mide cuántos ciclos queda ocupada la unidad por precio
 // (con la ventana llena debe ser 502: recorre 500 precios + 2 ciclos).
+// Además comprueba que una escritura de precio mientras la unidad está
+// ocupada se ignora (no cambia H, L, n ni el buffer).
 //
 // Correr desde pochoco_soc/:
 //   iverilog -g2012 -s tb_pochoco_donchian -o /tmp/tb_don rtl/pochoco_donchian.v tb/tb_pochoco_donchian.sv
@@ -75,6 +77,30 @@ module tb_pochoco_donchian;
                        n - 1, p, h, l, cnt, ref_h, ref_l));
   endtask
 
+  // Escribe p1 y, mientras la unidad lo procesa, intenta escribir p2:
+  // p2 debe ignorarse (la unidad solo acepta precios cuando está libre).
+  task automatic escribir_ocupada(input int p1, input int p2);
+    logic [31:0] st, h, l, cnt;
+    int ref_h, ref_l, k;
+    bus_escribir(8'h00, p1);
+    chequear(dut.state != 0, "la unidad debe quedar ocupada después de escribir un precio");
+    bus_escribir(8'h00, p2);                       // se debe ignorar
+    st = 1;
+    while (st[0]) bus_leer(8'h00, st);
+    hist[n] = p1;
+    n++;
+    ref_h = 0;
+    ref_l = 255;
+    for (k = n - 1; k >= 0 && k >= n - LE; k--) if (hist[k] > ref_h) ref_h = hist[k];
+    for (k = n - 1; k >= 0 && k >= n - LX; k--) if (hist[k] < ref_l) ref_l = hist[k];
+    bus_leer(8'h04, h);
+    bus_leer(8'h08, l);
+    bus_leer(8'h0C, cnt);
+    chequear(h == ref_h && l == ref_l && cnt == ((n < LE) ? n : LE),
+             $sformatf("escritura con la unidad ocupada (p1=%0d, p2=%0d): H=%0d L=%0d n=%0d, esperado H=%0d L=%0d",
+                       p1, p2, h, l, cnt, ref_h, ref_l));
+  endtask
+
   int p, k;
 
   initial begin
@@ -99,6 +125,10 @@ module tb_pochoco_donchian;
     for (k = 0; k < 600; k++) entregar(150);
     entregar(255);
     for (k = 0; k < 700; k++) entregar(150);
+    // 6) Escrituras mientras la unidad está ocupada: p2 extremo, para que
+    //    se note en H o L si la unidad lo aceptara por error
+    for (k = 0; k < 100; k++) escribir_ocupada(100 + ($urandom % 100), (k % 2) ? 1 : 255);
+    for (k = 0; k < 300; k++) entregar(150);       // vuelve a la normalidad
 
     $display("Precios entregados: %0d", n);
     $display("Ciclos ocupada por precio: promedio %0d, peor %0d", suma_ocupado / n, peor_ocupado);

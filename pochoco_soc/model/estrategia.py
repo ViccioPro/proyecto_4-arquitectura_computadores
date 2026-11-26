@@ -2,36 +2,30 @@
 """
 Modelo de referencia del algoritmo - Proyecto 4 (Pochoco Trader)
 
-Estrategia: reversión a la media con bandas de desviación estándar,
-stop-loss y bloqueo de recompra (pensada para mercados volátiles).
-  Ventana de N = 256 precios. S = suma, Q = suma de cuadrados.
-  d   = N*p - S            (N veces la distancia del precio a la media)
-  var = N*Q - S^2          (N^2 veces la varianza de la ventana)
-  Estados: FUERA (sin acciones), DENTRO (con acciones), BLOQUEADO (sin
-  acciones, después de un stop-loss).
-  - FUERA:     compra 63 si d < 0 y d^2 > 2*var    (p < media - 1,41 sigma)
-  - DENTRO:    vende 63 si d > 0 y d^2 > var       (p > media + 1 sigma)
-               vende 63 si d < 0 y d^2 > 16*var    (stop-loss: p < media - 4 sigma)
-                 y pasa a BLOQUEADO
-  - BLOQUEADO: vuelve a FUERA cuando d > 0 (el precio cruzó sobre la media)
-  Mientras la ventana no está llena (primeros N-1 precios): mantener.
+ESTRATEGIA FINAL (sw/trade.s): canal de Donchian 500/250 con compra
+inicial y meta de patrimonio (EstrategiaDonchian, valores por defecto).
+Con los precios ANTERIORES al actual, H = máximo de los últimos 500 y
+L = mínimo de los últimos 250. En orden de prioridad:
+  1. Meta: lleva su propia contabilidad (Mercado, mismas reglas que la
+     maestra); si el patrimonio caja + acciones*p llega a META
+     (1,35 x caja inicial = 13500), vende todo y no vuelve a operar.
+  2. Primer precio: compra 63 (compra inicial).
+  3. Precios 2 a 500: mantener (la ventana no está llena).
+  4. Sin acciones: compra 63 si p > H.  Con acciones: vende 63 si p < L.
+Elegida con validación cruzada en 9 series (el canal y la meta).
 
-Aritmética entera de 32 bits sin signo, igual que trade.s, para que las
-decisiones sean idénticas bit a bit. Valores máximos: S <= 65280,
-S^2 y N*Q <= 4,26e9 (caben en 32 bits). En assembly, si var >= 2^28 el
-stop-loss no se evalúa (16*var no cabe en 32 bits, y además ya es mayor
-que cualquier d^2 posible, así que la condición sería falsa igual).
+Versiones anteriores, que se verifican con variables de entorno:
+  sw/trade_don_ini.s                    env META=0
+  sw/trade_don_hw.s, trade_don.s,
+  trade_don_naive.s                     env META=0 COMPRA_INICIAL=0
+  sw/trade_reversion.s, trade_mulc.s,
+  trade_mmio.s                          EstrategiaReversion (metricas.py)
 
-ESTRATEGIA VIGENTE (21/11): canal de Donchian 500/250 (EstrategiaDonchian),
-elegida por robustez en 9 series con validación cruzada.
-Desde el 25/11 la versión final agrega una META DE PATRIMONIO de 13500
-(sw/trade_don_meta.s): al llegar a la meta vende todo y deja de operar.
-Desde el 24/11 con COMPRA INICIAL ("time in the market"): compra 63 con el
-primer precio y luego sigue el canal (sw/trade_don_ini.s). Para verificar
-la versión sin compra inicial (sw/trade_don_hw.s, sw/trade_don.s) se
-define la variable de entorno COMPRA_INICIAL=0. La reversión a la
-media (EstrategiaReversion) se conserva como referencia: es la que se probó
-con la FPGA maestra el 18/11.
+EstrategiaReversion es la estrategia anterior (probada con la FPGA maestra
+el 18/11): reversión a la media con ventana de N = 256 precios, bandas de
+1,41 sigma (entrada) y 1 sigma (salida), stop-loss a -4 sigma y bloqueo de
+recompra. Usa aritmética entera de 32 bits sin signo, igual que
+sw/trade_reversion.s, para que las decisiones sean idénticas bit a bit.
 
 Uso:
   python3 estrategia.py practica.csv            # serie completa
@@ -52,7 +46,7 @@ COMPRA_INICIAL = os.environ.get("COMPRA_INICIAL", "1") != "0"
 # Meta de patrimonio (sw/trade_don_meta.s, versión final): si el patrimonio llega
 # a META, vende todo y no vuelve a operar. Para verificar trade_don_ini.s se usa
 # META=0; para trade_don_hw.s / trade_don.s, META=0 y COMPRA_INICIAL=0.
-META = int(os.environ.get("META", "13500"))
+META = int(os.environ.get("META", str(CAJA0 * 135 // 100)))   # 1,35 x caja inicial = 13500
 BUY63 = 0x7F            # 01 111111
 SELL63 = 0xBF           # 10 111111
 HOLD = 0x00

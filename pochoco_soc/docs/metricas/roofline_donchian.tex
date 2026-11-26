@@ -3,17 +3,17 @@
 \begin{axis}[
   xmode=log, ymode=log,
   xlabel={Intensidad operacional (ops/byte)}, ylabel={Rendimiento (ops/s)},
-  title={Roofline del Espino: kernel del canal de Donchian}, legend pos=north west, legend style={font=\tiny},
-  xmin=0.01, xmax=1000, ymin=1e4, ymax=1e9, grid=both,
-  width=\linewidth, height=7cm]
+  title={Roofline del Espino: kernel del canal de Donchian}, legend pos=south east, legend style={font=\tiny},
+  xmin=0.01, xmax=100, ymin=1e+05, ymax=1e+08, grid=both,
+  width=\linewidth, height=6.5cm]
 \addplot[thick, black, domain=0.01:0.375, samples=2] {3.33333e+07*x};
-\addplot[thick, black, domain=0.375:1000, samples=2, forget plot] {1.25e+07};
+\addplot[thick, black, domain=0.375:100, samples=2, forget plot] {1.25e+07};
 \addlegendentry{Techo del Espino}
-\addplot[only marks, mark=*, mark size=2.5pt] coordinates {(1.57563,2.6217e+06)};
+\addplot[only marks, mark=*, mark size=2.5pt] coordinates {(6.02071,1.00179e+07)};
 \addlegendentry{Donchian ingenua (SW)}
-\addplot[only marks, mark=square*, mark size=2.5pt] coordinates {(53.3915,2.82418e+08)};
+\addplot[only marks, mark=square*, mark size=2.5pt] coordinates {(2.00753,1.06189e+07)};
 \addlegendentry{Donchian histograma (SW)}
-\addplot[only marks, mark=triangle*, mark size=2.5pt] coordinates {(62.5,3.73506e+07)};
-\addlegendentry{Donchian unidad HW}
+\addplot[only marks, mark=triangle*, mark size=2.5pt] coordinates {(0.333333,1e+07)};
+\addlegendentry{Donchian unidad HW (procesador)}
 \end{axis}
 \end{tikzpicture}

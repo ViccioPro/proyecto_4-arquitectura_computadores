@@ -49,7 +49,7 @@ Info: promoting u_pochoco.por_cnt_SB_LUT4_I3_O_SB_LUT4_I3_O [reset] (fanout 159)
 Info: promoting o_LED_SB_DFFER_Q_E_SB_LUT4_O_I3_SB_DFFER_D_E_SB_LUT4_I3_O [cen] (fanout 57)
 Info: Constraining chains...
 Info:       14 LCs used to legalise carry chains.
-Info: Checksum: 0xed7f586d
+Info: Checksum: 0x566975dc
 
 Info: Device utilisation:
 Info: 	         ICESTORM_LC:    1139/   1280    88%
@@ -74,8 +74,8 @@ Info:     at iteration #6, type ALL: wirelen solved = 982, spread = 7089, legal 
 Info:     at iteration #7, type ALL: wirelen solved = 1055, spread = 7073, legal = 8157; time = 0.02s
 Info:     at iteration #8, type ALL: wirelen solved = 1075, spread = 7088, legal = 7883; time = 0.02s
 Info:     at iteration #9, type ALL: wirelen solved = 1158, spread = 7078, legal = 8388; time = 0.02s
-Info: HeAP Placer Time: 0.30s
-Info:   of which solving equations: 0.16s
+Info: HeAP Placer Time: 0.28s
+Info:   of which solving equations: 0.15s
 Info:   of which spreading cells: 0.01s
 Info:   of which strict legalisation: 0.08s
 
@@ -86,7 +86,7 @@ Info:   at iteration #10: temp = 0.000000, timing cost = 580, wirelen = 5832
 Info:   at iteration #15: temp = 0.000000, timing cost = 547, wirelen = 5704
 Info:   at iteration #20: temp = 0.000000, timing cost = 518, wirelen = 5637
 Info:   at iteration #21: temp = 0.000000, timing cost = 509, wirelen = 5629 
-Info: SA placement time 0.82s
+Info: SA placement time 0.75s
 
 Info: Max frequency for clock 'i_Clk$SB_IO_IN_$glb_clk': 43.24 MHz (PASS at 25.00 MHz)
 
@@ -117,27 +117,27 @@ Info: [ 34455,  35554) |*********+
 Info: [ 35554,  36653) |**********************+
 Info: [ 36653,  37752) |***************************************+
 Info: [ 37752,  38851) |************************************************************ 
-Info: Checksum: 0x245296d4
+Info: Checksum: 0xe8990c0f
 
 Info: Routing..
 Info: Setting up routing queue.
 Info: Routing 4013 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      314        685 |  314   685 |      3457|       0.32       0.32|
-Info:       2000 |      737       1262 |  423   577 |      3053|       0.26       0.58|
-Info:       3000 |     1068       1876 |  331   614 |      2542|       0.22       0.80|
-Info:       4000 |     1547       2396 |  479   520 |      2168|       0.23       1.03|
-Info:       5000 |     1989       2954 |  442   558 |      1770|       0.20       1.23|
-Info:       6000 |     2466       3470 |  477   516 |      1398|       0.21       1.45|
-Info:       7000 |     2976       3946 |  510   476 |      1163|       0.33       1.77|
-Info:       8000 |     3510       4398 |  534   452 |       902|       0.35       2.12|
-Info:       9000 |     4077       4824 |  567   426 |       741|       0.51       2.63|
-Info:      10000 |     4685       5214 |  608   390 |       580|       0.44       3.07|
-Info:      10986 |     4997       5848 |  312   634 |         0|       0.31       3.38|
+Info:       1000 |      314        685 |  314   685 |      3457|       0.28       0.28|
+Info:       2000 |      737       1262 |  423   577 |      3053|       0.25       0.53|
+Info:       3000 |     1068       1876 |  331   614 |      2542|       0.22       0.75|
+Info:       4000 |     1547       2396 |  479   520 |      2168|       0.19       0.94|
+Info:       5000 |     1989       2954 |  442   558 |      1770|       0.19       1.13|
+Info:       6000 |     2466       3470 |  477   516 |      1398|       0.20       1.33|
+Info:       7000 |     2976       3946 |  510   476 |      1163|       0.31       1.64|
+Info:       8000 |     3510       4398 |  534   452 |       902|       0.34       1.98|
+Info:       9000 |     4077       4824 |  567   426 |       741|       0.49       2.47|
+Info:      10000 |     4685       5214 |  608   390 |       580|       0.42       2.88|
+Info:      10986 |     4997       5848 |  312   634 |         0|       0.29       3.18|
 Info: Routing complete.
-Info: Router1 time 3.38s
-Info: Checksum: 0x375121ed
+Info: Router1 time 3.18s
+Info: Checksum: 0x1f67fee5
 
 Info: Critical path report for clock 'i_Clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
 Info:       type curr  total name

@@ -42,6 +42,9 @@ CPI_MIN = 2.0                      # instrucción más rápida del Espino
 PERIODO_R3 = 2500                  # ciclos entre precios en la ronda 3 (100 us)
 RONDAS = [("Ronda 1", 10e-3), ("Ronda 2", 1e-3), ("Ronda 3", 0.1e-3)]
 SPI_NS = 9500                      # duración de la transacción SPI (testbench)
+CICLOS_UNIDAD = 502                # ciclos de la unidad Donchian por precio (ventana llena)
+UNIDAD_OPS_CICLO = 2               # comparaciones por ciclo de la unidad (una para H y una para L)
+UNIDAD_BYTES_CICLO = 1             # bytes por ciclo que lee la unidad de su BRAM (puerto de 8 bits)
 LE, LX = M.LE, M.LX
 OUT = os.path.join(RAIZ, "docs", "metricas")
 
@@ -95,11 +98,11 @@ PROGRAMAS = {
     "don_ini": dict(src="trade_don_ini.s", ref=DonIni, mul_mode=0, don=1,
                     titulo="Donchian HW + compra inicial",
                     kernel=[k_regex(r"\(s1\)|bnez t0, esp_unidad")]),
-    "don_meta": dict(src="trade_don_meta.s", ref=DonMeta, mul_mode=0, don=1,
+    "don_meta": dict(src="trade.s", ref=DonMeta, mul_mode=0, don=1,
                      titulo="Donchian HW + compra ini. + meta (final)",
                      kernel=[k_regex(r"\(s1\)|bnez t0, esp_unidad")]),
     # Estrategia anterior (reversión a la media): variantes del multiplicador
-    "rev_sw": dict(src="trade.s", ref=M.EstrategiaReversion, mul_mode=0, don=0,
+    "rev_sw": dict(src="trade_reversion.s", ref=M.EstrategiaReversion, mul_mode=0, don=0,
                    titulo="Reversión mul SW",
                    kernel=[k_etiquetas("mul", "buf_p"), k_regex(r"call mul|mv   a0, |mv   a1, (a3|t0|s1)")]),
     "rev_mulc": dict(src="trade_mulc.s", ref=M.EstrategiaReversion, mul_mode=1, don=0,
@@ -114,8 +117,8 @@ PROGRAMAS = {
 REPORTES = {
     "don_ingenua": "trade_don_naive_m0_r1", "don_hist": "trade_don_m0_r1",
     "don_hw": "trade_don_hw_m0_r1_d1", "don_ini": "trade_don_ini_m0_r1_d1",
-    "don_meta": "trade_don_meta_m0_r1_d1",
-    "rev_sw": "trade_m0_r1",
+    "don_meta": "trade_m0_r1_d1",
+    "rev_sw": "trade_reversion_m0_r1",
     "rev_mulc": "trade_mulc_m1_r1", "rev_mmio": "trade_mmio_m2_r1",
 }
 
@@ -323,7 +326,8 @@ def seccion_por_tick(datos, rapido):
     csv_out("por_tick.csv", enc, filas)
     tabla_tex("por_tick.tex", enc, filas,
               "Instrucciones (IC), ciclos, CPI y tiempo de ejecución por tick a 25\\,MHz, en promedio "
-              "y en el peor caso (simulador del Espino sobre las series de práctica).")
+              "y en el peor caso. Valores del simulador del Espino sobre las series de práctica "
+              "(error de 1 a 3\\,\\% frente al RTL; la latencia se contrasta con el RTL aparte).")
     return resultados
 
 
@@ -359,6 +363,9 @@ def seccion_amdahl(res):
     log("=" * 70)
     log("  f = fracción de ciclos del kernel en la versión base; s_k = speedup del kernel;")
     log("  predicho = 1 / ((1 - f) + f / s_k); medido = ciclos base / ciclos variante.")
+    log(f"  Con la unidad, el kernel de la variante son los ciclos del procesador más los {CICLOS_UNIDAD}")
+    log("  de la unidad, como si se ejecutaran uno después del otro (Amdahl secuencial). El")
+    log("  speedup medido es mayor porque la unidad trabaja en paralelo con el procesador.")
     pares = [("don_ingenua", "don_hist"), ("don_ingenua", "don_hw"), ("don_hist", "don_hw"),
              ("rev_sw", "rev_mulc"), ("rev_sw", "rev_mmio")]
     enc = ["Base", "Variante", "f (kernel)", "Kernel base", "Kernel var.", "s_k",
@@ -368,17 +375,24 @@ def seccion_amdahl(res):
         B, V = res[b]["filas"], res[v]["filas"]
         tb, tv = st.mean(f["ocupado"] for f in B), st.mean(f["ocupado"] for f in V)
         kb, kv = st.mean(f["k_ciclos"] for f in B), st.mean(f["k_ciclos"] for f in V)
+        kv_txt = f"{kv:.1f}"
+        if PROGRAMAS[v]["don"]:                  # la unidad trabaja CICLOS_UNIDAD ciclos por precio
+            kv_txt = f"{kv:.1f} + {CICLOS_UNIDAD}"
+            kv = kv + CICLOS_UNIDAD
         f_ = kb / tb
         sk = kb / kv if kv else float("inf")
         pred = 1 / ((1 - f_) + f_ / sk)
         med = tb / tv
         medp = max(f["ocupado"] for f in B) / max(f["ocupado"] for f in V)
         filas.append([PROGRAMAS[b]["titulo"], PROGRAMAS[v]["titulo"], f"{f_:.3f}", f"{kb:.1f}",
-                      f"{kv:.1f}", f"{sk:.1f}", f"{pred:.2f}x", f"{med:.2f}x", f"{medp:.2f}x"])
+                      kv_txt, f"{sk:.1f}", f"{pred:.2f}x", f"{med:.2f}x", f"{medp:.2f}x"])
     tabla_txt(enc, filas)
     tabla_tex("amdahl.tex", enc, filas,
               "Ley de Amdahl: fracción del kernel en la versión base, speedup del kernel, speedup "
-              "predicho y medido (ciclos de procesador por tick, promedio; última columna: peor caso).")
+              "predicho y medido (ciclos de procesador por tick, promedio; última columna: peor caso). "
+              f"Con la unidad, el kernel de la variante suma los ciclos del procesador y los {CICLOS_UNIDAD} "
+              "de la unidad (predicción secuencial); el speedup medido la supera porque la unidad "
+              "trabaja en paralelo con el procesador.")
 
 
 # ------------------------------------------------------------------
@@ -389,59 +403,66 @@ def seccion_roofline(res):
     log("=" * 70)
     log("5. OPS/S Y ROOFLINE")
     log("=" * 70)
-    pi = F_CLK / CPI_MIN                 # techo de cómputo: 1 op por instrucción
+    pi = F_CLK / CPI_MIN                 # techo de cómputo: 1 instrucción cada 2 ciclos
     beta = 4 * F_CLK / 3                 # techo de memoria: 1 palabra por load (3 ciclos)
-    log(f"  Techo de cómputo del Espino: {pi/1e6:.1f} Mops/s (1 operación por instrucción, CPI mínimo 2)")
-    log(f"  Techo de memoria: {beta/1e6:.1f} MB/s (un lw de 4 bytes cada 3 ciclos)")
-    log(f"  Punto de quiebre: {pi/beta:.3f} ops/byte")
-    log("")
-    log("  Donchian - operación útil: procesar un precio de la ventana para H o L")
-    log(f"  (trabajo de referencia por tick: {LE} + {LX} = {LE+LX} operaciones).")
-    log("  Multiplicación - operación útil: una multiplicación (cuadrado) del algoritmo.")
-    log("  Nota: con esta definición (trabajo útil equivalente), un punto sobre el techo")
-    log("  del Espino indica que la versión evita trabajo (histograma: mejora algorítmica)")
-    log("  o lo hace en hardware propio en paralelo (unidad): el procesador solo, haciendo")
-    log("  el trabajo completo, no podría superar el techo.")
+    pi_u = UNIDAD_OPS_CICLO * F_CLK      # techo de cómputo de la unidad
+    beta_u = UNIDAD_BYTES_CICLO * F_CLK  # techo de memoria de la unidad (su BRAM)
+    log(f"  Espino: techo de cómputo {pi/1e6:.1f} Mops/s (1 instrucción cada 2 ciclos), techo de")
+    log(f"  memoria {beta/1e6:.1f} MB/s (un lw de 4 bytes cada 3 ciclos), quiebre {pi/beta:.3f} ops/byte.")
+    log(f"  Unidad Donchian: techo de cómputo {pi_u/1e6:.1f} Mops/s ({UNIDAD_OPS_CICLO} comparaciones por ciclo),")
+    log(f"  techo de memoria {beta_u/1e6:.1f} MB/s (1 byte por ciclo de su BRAM), quiebre {pi_u/beta_u:.1f} ops/byte.")
+    log("  Operación = operación realmente ejecutada: una instrucción del kernel en el procesador,")
+    log("  o una comparación en la unidad. Bytes = bytes leídos o escritos por el kernel.")
     filas = []
-    puntos = {"don": [], "mul": []}
+    puntos = {"don": [], "mul": [], "unidad": []}
+
+    def fila(titulo, hw, ops, nbytes, ciclos, techo_c, techo_m, grupo):
+        t = ciclos / F_CLK
+        perf = ops / t if t else float("inf")
+        inten = ops / nbytes if nbytes else float("inf")
+        techo = techo_c if inten == float("inf") else min(techo_c, techo_m * inten)
+        if inten != float("inf"):
+            puntos[grupo].append((titulo, inten, perf))
+        filas.append([titulo, hw, f"{ops:.1f}", f"{nbytes:.1f}", f"{ciclos:.1f}",
+                      "inf" if inten == float("inf") else f"{inten:.2f}", f"{perf/1e6:.2f}",
+                      f"{100*perf/techo:.0f}%"])
+
     for prog, r in res.items():
         if prog in ("don_ini", "don_meta"):   # mismo kernel que don_hw (cambia solo la decisión)
             continue
         F = r["filas"]
         kc = st.mean(f["k_ciclos"] for f in F)
         kbytes = st.mean(f["k_bytes"] for f in F)
-        if prog.startswith("don"):
-            ops = LE + LX
-            if prog == "don_hw":
-                t_kernel = (LE + 2) / F_CLK        # la unidad recorre 500 precios en 502 ciclos
-                nota = "kernel en la unidad (502 ciclos, en paralelo)"
-            else:
-                t_kernel = kc / F_CLK
-                nota = "kernel en el procesador"
-            grupo = "don"
-        else:
-            ops = _mults_por_tick(prog, r)
-            t_kernel = kc / F_CLK
-            nota = "kernel en el procesador" + (" + multiplicador" if prog != "rev_sw" else "")
-            grupo = "mul"
-        perf = ops / t_kernel if t_kernel else float("inf")
-        inten = ops / kbytes if kbytes else float("inf")
-        puntos[grupo].append((PROGRAMAS[prog]["titulo"], inten, perf))
         kic = st.mean(f["k_ic"] for f in F)
-        filas.append([PROGRAMAS[prog]["titulo"], f"{ops:.1f}", f"{kic:.1f}", f"{kc:.1f}", f"{kbytes:.1f}",
-                      "inf" if inten == float("inf") else f"{inten:.2f}", f"{perf/1e6:.3f}", nota])
-    enc = ["Versión", "Ops útiles/tick", "Instr. kernel", "Ciclos kernel", "Bytes kernel",
-           "Intensidad (ops/B)", "Mops/s útiles", "Nota"]
+        grupo = "don" if prog.startswith("don") else "mul"
+        hw = "Espino"
+        if prog == "rev_mulc":
+            hw = "Espino + mulc"
+        elif prog == "rev_mmio":
+            hw = "Espino + mul MMIO"
+        elif prog == "don_hw":
+            hw = "Espino (bus)"
+        titulo = PROGRAMAS[prog]["titulo"] + (" (procesador)" if prog == "don_hw" else "")
+        fila(titulo, hw, kic, kbytes, kc, pi, beta, grupo)
+        if prog == "don_hw":
+            fila("Donchian unidad HW (unidad)", "Unidad Donchian", LE + LX, LE * UNIDAD_BYTES_CICLO,
+                 CICLOS_UNIDAD, pi_u, beta_u, "unidad")
+    enc = ["Versión", "Hardware", "Ops/tick", "Bytes/tick", "Ciclos", "Intensidad (ops/B)",
+           "Mops/s", "% del techo"]
     tabla_txt(enc, filas)
+    log("  (inf: el kernel no accede a memoria; no se puede ubicar en el roofline.)")
     tabla_tex("ops_roofline.tex", enc, filas,
-              "Operaciones útiles por segundo e intensidad operacional del kernel de cada versión "
-              "(promedios por tick). Donchian: operación útil = procesar un precio de la ventana "
-              "(750 por tick). Multiplicación: operación útil = un cuadrado del algoritmo.",
-              alineacion="lrrrrrrl")
+              "Operaciones por segundo e intensidad operacional del kernel de cada versión (promedios "
+              "por tick). Operación = operación realmente ejecutada (instrucción del kernel en el "
+              "procesador, comparación en la unidad). \\% del techo: rendimiento sobre el techo del "
+              "roofline del hardware que ejecuta el kernel. inf: sin accesos a memoria.",
+              alineacion="llrrrrrr")
     _roofline_tex("roofline_donchian.tex", puntos["don"], pi, beta,
-                  "Roofline del Espino: kernel del canal de Donchian")
+                  "Roofline del Espino: kernel del canal de Donchian", "Techo del Espino")
     _roofline_tex("roofline_mul.tex", puntos["mul"], pi, beta,
-                  "Roofline del Espino: kernel de multiplicación (estrategia anterior)")
+                  "Roofline del Espino: kernel de multiplicación (estrategia anterior)", "Techo del Espino")
+    _roofline_tex("roofline_unidad.tex", puntos["unidad"], pi_u, beta_u,
+                  "Roofline de la unidad Donchian (su propio techo)", "Techo de la unidad")
 
 
 _MULTS = {}
@@ -470,31 +491,26 @@ def _contar_mults(datos):
     return total / ticks
 
 
-def _roofline_tex(nombre, puntos, pi, beta, titulo):
-    xs = [x for _, x, _ in puntos if x != float("inf")]
+def _roofline_tex(nombre, puntos, pi, beta, titulo, etiqueta):
+    xs = [x for _, x, _ in puntos]
+    ys = [y for _, _, y in puntos]
     xmin = min([0.01] + [x / 4 for x in xs])
-    xmax = max([1000] + [x * 4 for x in xs])
+    xmax = max([100] + [x * 4 for x in xs])
+    ymin = 10 ** int(__import__("math").floor(__import__("math").log10(min(ys + [pi]) / 30)))
+    ymax = 10 ** int(__import__("math").ceil(__import__("math").log10(pi * 3)))
     with open(os.path.join(OUT, nombre), "w") as f:
         f.write("% Generado por model/metricas.py - requiere \\usepackage{pgfplots}\n")
         f.write("\\begin{tikzpicture}\n\\begin{axis}[\n  xmode=log, ymode=log,\n")
         f.write("  xlabel={Intensidad operacional (ops/byte)}, ylabel={Rendimiento (ops/s)},\n")
-        f.write(f"  title={{{titulo}}}, legend pos=north west, legend style={{font=\\tiny}},\n")
-        f.write(f"  xmin={xmin:.4g}, xmax={xmax:.4g}, ymin=1e4, ymax=1e9, grid=both,\n  width=\\linewidth, height=7cm]\n")
+        f.write(f"  title={{{titulo}}}, legend pos=south east, legend style={{font=\\tiny}},\n")
+        f.write(f"  xmin={xmin:.4g}, xmax={xmax:.4g}, ymin={ymin:.4g}, ymax={ymax:.4g}, grid=both,\n  width=\\linewidth, height=6.5cm]\n")
         quiebre = pi / beta
         f.write(f"\\addplot[thick, black, domain={xmin:.4g}:{quiebre:.4g}, samples=2] {{{beta:.6g}*x}};\n")
         f.write(f"\\addplot[thick, black, domain={quiebre:.4g}:{xmax:.4g}, samples=2, forget plot] {{{pi:.6g}}};\n")
-        f.write("\\addlegendentry{Techo del Espino}\n")
+        f.write(f"\\addlegendentry{{{etiqueta}}}\n")
         marcas = ["*", "square*", "triangle*", "diamond*"]
-        n_inf = 0
         for i, (t, x, y) in enumerate(puntos):
-            if x == float("inf"):
-                # sin accesos a memoria en el kernel: se dibuja en el borde derecho
-                xx = xmax / (3 if n_inf == 0 else 1.5)
-                n_inf += 1
-                t = t + " (sin accesos a memoria)"
-            else:
-                xx = x
-            f.write(f"\\addplot[only marks, mark={marcas[i % 4]}, mark size=2.5pt] coordinates {{({xx:.6g},{y:.6g})}};\n")
+            f.write(f"\\addplot[only marks, mark={marcas[i % 4]}, mark size=2.5pt] coordinates {{({x:.6g},{y:.6g})}};\n")
             f.write(f"\\addlegendentry{{{t}}}\n")
         f.write("\\end{axis}\n\\end{tikzpicture}\n")
 
@@ -532,7 +548,35 @@ def seccion_recursos():
         lc_u, lc_t = (int(lc[-1][0]), int(lc[-1][1])) if lc else (0, 1)
         filas.append([PROGRAMAS[prog]["titulo"], num("SB_LUT4"), num("SB_CARRY"), ffs,
                       num("SB_RAM40_4K"), lc_u, f"{100*lc_u/lc_t:.0f}%", fmax])
-    filas.append(["Unidad HW v1 (histogramas, descartada)", 1208, 220, "-", 15, 1478, "115% (no cabe)", "-"])
+    # Alternativas descartadas (make evidencias -> reports/evidencias/)
+    evid = [("sin_reduccion", "Diseño base sin reducción de área"),
+            ("unidad_v1", "Unidad HW v1 (histogramas, descartada)"),
+            ("pll", "Con PLL (descartado)")]
+    hay = False
+    for n, titulo in evid:
+        stat = os.path.join(RAIZ, "reports", "evidencias", n + "_stat.txt")
+        pnr = os.path.join(RAIZ, "reports", "evidencias", n + "_nextpnr.log")
+        if not os.path.exists(stat):
+            continue
+        hay = True
+        txt = open(stat).read()
+        num = lambda celda: sum(int(m) for m in re.findall(r"(\d+)\s+" + celda + r"\b", txt))
+        ffs = sum(int(m) for m in re.findall(r"(\d+)\s+SB_DFF\w*", txt))
+        log_pnr = open(pnr).read() if os.path.exists(pnr) else ""
+        lc = re.findall(r"ICESTORM_LC:\s+(\d+)/\s*(\d+)", log_pnr)
+        fm = re.findall(r"Max frequency for clock[^:]*:\s+([\d.]+) MHz", log_pnr)
+        falla = "ERROR" in log_pnr
+        lc_txt, pct = "-", "-"
+        if lc:
+            lc_u, lc_t = int(lc[-1][0]), int(lc[-1][1])
+            lc_txt, pct = lc_u, f"{100*lc_u/lc_t:.0f}%"
+        if falla:
+            pct = pct + " (falla nextpnr)" if pct != "-" else "falla nextpnr"
+        filas.append([titulo, num("SB_LUT4"), num("SB_CARRY"), ffs, num("SB_RAM40_4K"), lc_txt, pct,
+                      "-" if falla or not fm else fm[-1]])
+    if not hay:
+        log("  falta reports/evidencias/: make evidencias")
+        filas.append(["Unidad HW v1 (histogramas, descartada)", 1208, 220, "-", 15, 1478, "115% (no cabe)", "-"])
     tabla_txt(enc, filas)
     tabla_tex("recursos.tex", enc, filas,
               "Recursos de la iCE40 HX1K por versión (yosys y nextpnr). Fmax como rango cuando se "

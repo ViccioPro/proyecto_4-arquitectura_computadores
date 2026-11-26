@@ -23,6 +23,11 @@
 //   offset 0x8  lectura  : L
 //   offset 0xC  lectura  : precios recibidos (satura en LE)
 //
+// Un precio escrito mientras la unidad está ocupada (estado = 1) se IGNORA:
+// no se guarda ni cambia H, L o n. El programa debe esperar a que el estado
+// vuelva a 0 antes de entregar el siguiente precio (sw/trade.s lo hace, y
+// tb/tb_pochoco_donchian.sv lo comprueba).
+//
 // Uso típico por tick (el procesador decide con H y L de los precios
 // ANTERIORES y luego entrega el precio actual):
 //   esp: lw t, 0(base) ; bnez t, esp      # esperar a la unidad

@@ -1,0 +1,26 @@
+
+19. Printing statistics.
+
+=== trader_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      821 wires
+     2279 wire bits
+      821 public wires
+     2279 public wire bits
+       23 ports
+       29 port bits
+     1157 cells
+       15   $scopeinfo
+      102   SB_CARRY
+       77   SB_DFF
+       52   SB_DFFE
+       85   SB_DFFER
+        7   SB_DFFR
+        3   SB_DFFS
+        4   SB_DFFSR
+      799   SB_LUT4
+        1   SB_PLL40_CORE
+       12   SB_RAM40_4K
+

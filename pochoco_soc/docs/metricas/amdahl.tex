@@ -9,12 +9,12 @@
 Base & Variante & f (kernel) & Kernel base & Kernel var. & s\_k & Predicho & Medido & Medido peor caso \\
 \midrule
 Donchian ingenua (SW) & Donchian histograma (SW) & 0.995 & 7151.9 & 66.4 & 107.7 & 71.49x & 71.32x & 11.63x \\
-Donchian ingenua (SW) & Donchian unidad HW & 0.995 & 7151.9 & 10.0 & 715.2 & 162.87x & 187.28x & 168.02x \\
-Donchian histograma (SW) & Donchian unidad HW & 0.659 & 66.4 & 10.0 & 6.6 & 2.27x & 2.63x & 14.44x \\
+Donchian ingenua (SW) & Donchian unidad HW & 0.995 & 7151.9 & 10.0 + 502 & 14.0 & 13.16x & 187.28x & 168.02x \\
+Donchian histograma (SW) & Donchian unidad HW & 0.659 & 66.4 & 10.0 + 502 & 0.1 & 0.18x & 2.63x & 14.44x \\
 Reversión mul SW & Reversión mulc (custom-0) & 0.819 & 379.0 & 36.0 & 10.5 & 3.87x & 3.81x & 4.31x \\
 Reversión mul SW & Reversión mul MMIO & 0.819 & 379.0 & 70.4 & 5.4 & 3.01x & 3.01x & 3.38x \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\caption{Ley de Amdahl: fracción del kernel en la versión base, speedup del kernel, speedup predicho y medido (ciclos de procesador por tick, promedio; última columna: peor caso).}
+\caption{Ley de Amdahl: fracción del kernel en la versión base, speedup del kernel, speedup predicho y medido (ciclos de procesador por tick, promedio; última columna: peor caso). Con la unidad, el kernel de la variante suma los ciclos del procesador y los 502 de la unidad (predicción secuencial); el speedup medido la supera porque la unidad trabaja en paralelo con el procesador.}
 \end{table}

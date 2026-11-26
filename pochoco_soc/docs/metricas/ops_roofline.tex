@@ -4,18 +4,19 @@
 \centering
 \small
 \begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{lrrrrrrl}
+\begin{tabular}{llrrrrrr}
 \toprule
-Versión & Ops útiles/tick & Instr. kernel & Ciclos kernel & Bytes kernel & Intensidad (ops/B) & Mops/s útiles & Nota \\
+Versión & Hardware & Ops/tick & Bytes/tick & Ciclos & Intensidad (ops/B) & Mops/s & \% del techo \\
 \midrule
-Donchian ingenua (SW) & 750.0 & 2865.9 & 7151.9 & 476.0 & 1.58 & 2.622 & kernel en el procesador \\
-Donchian histograma (SW) & 750.0 & 28.2 & 66.4 & 14.0 & 53.39 & 282.418 & kernel en el procesador \\
-Donchian unidad HW & 750.0 & 4.0 & 10.0 & 12.0 & 62.50 & 37.351 & kernel en la unidad (502 ciclos, en paralelo) \\
-Reversión mul SW & 2.9 & 168.1 & 379.0 & 0.0 & inf & 0.191 & kernel en el procesador \\
-Reversión mulc (custom-0) & 2.9 & 2.9 & 36.0 & 0.0 & inf & 2.010 & kernel en el procesador + multiplicador \\
-Reversión mul MMIO & 2.9 & 26.4 & 70.4 & 70.2 & 0.04 & 1.029 & kernel en el procesador + multiplicador \\
+Donchian ingenua (SW) & Espino & 2865.9 & 476.0 & 7151.9 & 6.02 & 10.02 & 80\% \\
+Donchian histograma (SW) & Espino & 28.2 & 14.0 & 66.4 & 2.01 & 10.62 & 85\% \\
+Donchian unidad HW (procesador) & Espino (bus) & 4.0 & 12.0 & 10.0 & 0.33 & 10.00 & 90\% \\
+Donchian unidad HW (unidad) & Unidad Donchian & 750.0 & 500.0 & 502.0 & 1.50 & 37.35 & 100\% \\
+Reversión mul SW & Espino & 168.1 & 0.0 & 379.0 & inf & 11.09 & 89\% \\
+Reversión mulc (custom-0) & Espino + mulc & 2.9 & 0.0 & 36.0 & inf & 2.02 & 16\% \\
+Reversión mul MMIO & Espino + mul MMIO & 26.4 & 70.2 & 70.4 & 0.38 & 9.37 & 75\% \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\caption{Operaciones útiles por segundo e intensidad operacional del kernel de cada versión (promedios por tick). Donchian: operación útil = procesar un precio de la ventana (750 por tick). Multiplicación: operación útil = un cuadrado del algoritmo.}
+\caption{Operaciones por segundo e intensidad operacional del kernel de cada versión (promedios por tick). Operación = operación realmente ejecutada (instrucción del kernel en el procesador, comparación en la unidad). \% del techo: rendimiento sobre el techo del roofline del hardware que ejecuta el kernel. inf: sin accesos a memoria.}
 \end{table}

@@ -1,48 +1,54 @@
 # ============================================================
 # Proyecto 4 - Pochoco Trader (Go Board, iCE40 HX1K)
 #
-# Uso (desde pochoco_soc/):
-#   make sim    MUL_MODE=1    simula tb_proyecto_4 y verifica las decisiones
-#   make bin    MUL_MODE=1    genera el bitstream en bitstreams/
-#   make prog   MUL_MODE=1    genera el bitstream y programa la Go Board
-#   make iss    MUL_MODE=1    estimación rápida de IC/ciclos/CPI (simulador Python)
+# Uso (desde pochoco_soc/). Sin parámetros se usa la configuración final:
+# programa sw/trade.s (Donchian + compra inicial + meta) con la unidad
+# Donchian (MUL_MODE=0, DON_UNIT=1).
+#   make sim                  simula tb_proyecto_4 y verifica las decisiones
+#   make bin                  genera el bitstream en bitstreams/
+#   make prog                 genera el bitstream y programa la Go Board
+#   make medir                verifica decisiones y mide ciclos por tick en
+#                             todas las series de tb/series/ (simulador Python)
+#   make iss                  estimación rápida de IC/ciclos/CPI (simulador Python)
 #   make tbmul  MUL_RADIX=1   testbench del multiplicador
 #   make tbdon                testbench de la unidad Donchian
 #   make metricas             tablas y gráficos para el informe (docs/metricas/)
-#   make fmax   MUL_MODE=...  Fmax con 5 semillas de place & route (después de make pnr)
+#   make fmax                 Fmax con 5 semillas de place & route
+#   make evidencias           síntesis de las alternativas descartadas (PLL,
+#                             diseño sin reducción de área, unidad v1)
 #   make versiones            versiones de las herramientas (docs/versiones.txt)
 #   make modelo               modelo de referencia vs. no operar / comprar y mantener
-#   make medir  PROG=trade_don  verifica decisiones y mide ciclos por tick en
-#                               todas las series de tb/series/ (simulador Python)
 #   make clean                borra archivos generados
 #
-# Estrategia vigente: canal de Donchian 500/250 (sw/trade_don.s, no usa
-# multiplicaciones). Ej.: make sim MUL_MODE=0 PROG=trade_don
-# Los programas trade.s / trade_mulc.s / trade_mmio.s son de la estrategia
-# anterior (reversión a la media), usada para medir el multiplicador.
+# Otras versiones (PROG = programa en sw/):
+#   make sim PROG=trade_don_ini              Donchian + compra inicial (sin meta)*
+#   make sim PROG=trade_don_hw               Donchian con la unidad, sin compra inicial*
+#   make sim DON_UNIT=0 PROG=trade_don       Donchian con histogramas (solo software)*
+#   make sim DON_UNIT=0 PROG=trade_don_naive Donchian ingenua (solo software)*
+#   make sim MUL_MODE=1                      reversión a la media, instrucción mulc
+#   make sim MUL_MODE=2                      reversión a la media, multiplicador MMIO
+#   make sim DON_UNIT=0 PROG=trade_reversion reversión a la media, mul por software
+#   make prog DON_UNIT=0 PROG=trade_min      prueba de conexión
+# * El modelo usa por defecto la estrategia final. Para verificar estas
+#   versiones: env META=0 (trade_don_ini) o env META=0 COMPRA_INICIAL=0.
 #
-# Variantes (MUL_MODE):
-#   0 = solo software        (sw/trade.s)
-#   1 = instrucción custom-0 (sw/trade_mulc.s)   <- variante final, por defecto
-#   2 = periférico MMIO      (sw/trade_mmio.s)
-# MUL_RADIX = bits por ciclo del multiplicador (1, 2 o 4).
-# DON_UNIT  = 1 agrega la unidad de ventana deslizante (rtl/pochoco_donchian.v),
-#             que usa sw/trade_don_hw.s.
-#   Ej.: make sim MUL_MODE=0 DON_UNIT=1 PROG=trade_don_hw
-# PROG = programa a usar; por defecto el de la variante.
-#   Ej.: make prog MUL_MODE=0 PROG=trade_min   (prueba de conexión)
+# Variantes de hardware:
+#   MUL_MODE  = 0 sin multiplicador, 1 instrucción custom-0 (mulc), 2 periférico MMIO
+#   MUL_RADIX = bits por ciclo del multiplicador (1, 2 o 4)
+#   DON_UNIT  = 1 agrega la unidad de ventana deslizante (rtl/pochoco_donchian.v);
+#               por defecto 1 con MUL_MODE=0 y 0 con un multiplicador (no caben juntos)
 #
 # Los reportes de yosys y nextpnr quedan en reports/.
 # ============================================================
 
-MUL_MODE  ?= 1
+MUL_MODE  ?= 0
 MUL_RADIX ?= 1
-DON_UNIT  ?= 0
+DON_UNIT  ?= $(if $(filter 0,$(MUL_MODE)),1,0)
 
-PROG_0 := trade
+PROG_0 := trade_reversion
 PROG_1 := trade_mulc
 PROG_2 := trade_mmio
-PROG   ?= $(PROG_$(MUL_MODE))
+PROG   ?= $(if $(filter 1,$(DON_UNIT)),trade,$(PROG_$(MUL_MODE)))
 
 TOP  := trader_top
 PCF  := goboard.pcf
@@ -52,7 +58,7 @@ SRC  := $(wildcard rtl/*.v rtl/espino_core/*.v)
 DEFS := -DMUL_MODE=$(MUL_MODE) -DMUL_RADIX=$(MUL_RADIX) -DDON_UNIT=$(DON_UNIT)
 NAME := $(PROG)_m$(MUL_MODE)_r$(MUL_RADIX)$(if $(filter 1,$(DON_UNIT)),_d1,)
 
-.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo metricas fmax versiones clean
+.PHONY: all hex synth pnr bin prog sim iss medir tbmul tbdon modelo metricas fmax evidencias versiones clean
 
 all: bin
 
@@ -122,6 +128,10 @@ fmax: synth
 	    | tee -a reports/$(NAME)_fmax.txt; \
 	  rm -f reports/$(NAME)_seed$$s.log; \
 	done
+
+# ---- Evidencia de las alternativas descartadas (reports/evidencias/) ----
+evidencias:
+	bash tools/evidencias.sh
 
 # ---- Versiones de las herramientas ----
 versiones:

@@ -35,7 +35,7 @@
                   Donchian histograma (SW)     43.2      264        100.8          650  2.33             27              4.03             26.00
                         Donchian unidad HW     16.0       19         38.4           45  2.40             35              1.53              1.80
               Donchian HW + compra inicial     17.0       20         40.4           47  2.37             37              1.62              1.88
-  Donchian HW + compra ini. + meta (final)     26.0      441         60.6          957  2.33            950              2.42             38.28
+  Donchian HW + compra ini. + meta (final)     27.5      108         63.9          236  2.33            229              2.56              9.44
                           Reversión mul SW    205.7      336        462.5          746  2.25            743             18.50             29.84
                  Reversión mulc (custom-0)     41.6       57        121.5          173  2.92            170              4.86              6.92
                         Reversión mul MMIO     64.0       92        153.9          221  2.40            218              6.16              8.84
@@ -48,7 +48,7 @@
                   Donchian histograma (SW)                  0.3% OK                 2.6% OK               28.7% OK
                         Donchian unidad HW                  0.0% OK                 0.2% OK                2.0% OK
               Donchian HW + compra inicial                  0.0% OK                 0.2% OK                2.1% OK
-  Donchian HW + compra ini. + meta (final)                  0.4% OK                 3.9% OK               42.3% OK
+  Donchian HW + compra ini. + meta (final)                  0.1% OK                 1.0% OK               10.4% OK
                           Reversión mul SW                  0.3% OK                 3.0% OK               33.0% OK
                  Reversión mulc (custom-0)                  0.1% OK                 0.7% OK                7.6% OK
                         Reversión mul MMIO                  0.1% OK                 0.9% OK                9.8% OK
@@ -58,45 +58,47 @@
 ======================================================================
   f = fracción de ciclos del kernel en la versión base; s_k = speedup del kernel;
   predicho = 1 / ((1 - f) + f / s_k); medido = ciclos base / ciclos variante.
+  Con la unidad, el kernel de la variante son los ciclos del procesador más los 502
+  de la unidad, como si se ejecutaran uno después del otro (Amdahl secuencial). El
+  speedup medido es mayor porque la unidad trabaja en paralelo con el procesador.
                       Base                   Variante  f (kernel)  Kernel base  Kernel var.    s_k  Predicho   Medido  Medido peor caso
      Donchian ingenua (SW)   Donchian histograma (SW)       0.995       7151.9         66.4  107.7    71.49x   71.32x            11.63x
-     Donchian ingenua (SW)         Donchian unidad HW       0.995       7151.9         10.0  715.2   162.87x  187.28x           168.02x
-  Donchian histograma (SW)         Donchian unidad HW       0.659         66.4         10.0    6.6     2.27x    2.63x            14.44x
+     Donchian ingenua (SW)         Donchian unidad HW       0.995       7151.9   10.0 + 502   14.0    13.16x  187.28x           168.02x
+  Donchian histograma (SW)         Donchian unidad HW       0.659         66.4   10.0 + 502    0.1     0.18x    2.63x            14.44x
           Reversión mul SW  Reversión mulc (custom-0)       0.819        379.0         36.0   10.5     3.87x    3.81x             4.31x
           Reversión mul SW         Reversión mul MMIO       0.819        379.0         70.4    5.4     3.01x    3.01x             3.38x
 
 ======================================================================
 5. OPS/S Y ROOFLINE
 ======================================================================
-  Techo de cómputo del Espino: 12.5 Mops/s (1 operación por instrucción, CPI mínimo 2)
-  Techo de memoria: 33.3 MB/s (un lw de 4 bytes cada 3 ciclos)
-  Punto de quiebre: 0.375 ops/byte
-
-  Donchian - operación útil: procesar un precio de la ventana para H o L
-  (trabajo de referencia por tick: 500 + 250 = 750 operaciones).
-  Multiplicación - operación útil: una multiplicación (cuadrado) del algoritmo.
-  Nota: con esta definición (trabajo útil equivalente), un punto sobre el techo
-  del Espino indica que la versión evita trabajo (histograma: mejora algorítmica)
-  o lo hace en hardware propio en paralelo (unidad): el procesador solo, haciendo
-  el trabajo completo, no podría superar el techo.
-                    Versión  Ops útiles/tick  Instr. kernel  Ciclos kernel  Bytes kernel  Intensidad (ops/B)  Mops/s útiles                                           Nota
-      Donchian ingenua (SW)            750.0         2865.9         7151.9         476.0                1.58          2.622                        kernel en el procesador
-   Donchian histograma (SW)            750.0           28.2           66.4          14.0               53.39        282.418                        kernel en el procesador
-         Donchian unidad HW            750.0            4.0           10.0          12.0               62.50         37.351  kernel en la unidad (502 ciclos, en paralelo)
-           Reversión mul SW              2.9          168.1          379.0           0.0                 inf          0.191                        kernel en el procesador
-  Reversión mulc (custom-0)              2.9            2.9           36.0           0.0                 inf          2.010        kernel en el procesador + multiplicador
-         Reversión mul MMIO              2.9           26.4           70.4          70.2                0.04          1.029        kernel en el procesador + multiplicador
+  Espino: techo de cómputo 12.5 Mops/s (1 instrucción cada 2 ciclos), techo de
+  memoria 33.3 MB/s (un lw de 4 bytes cada 3 ciclos), quiebre 0.375 ops/byte.
+  Unidad Donchian: techo de cómputo 50.0 Mops/s (2 comparaciones por ciclo),
+  techo de memoria 25.0 MB/s (1 byte por ciclo de su BRAM), quiebre 2.0 ops/byte.
+  Operación = operación realmente ejecutada: una instrucción del kernel en el procesador,
+  o una comparación en la unidad. Bytes = bytes leídos o escritos por el kernel.
+                          Versión           Hardware  Ops/tick  Bytes/tick  Ciclos  Intensidad (ops/B)  Mops/s  % del techo
+            Donchian ingenua (SW)             Espino    2865.9       476.0  7151.9                6.02   10.02          80%
+         Donchian histograma (SW)             Espino      28.2        14.0    66.4                2.01   10.62          85%
+  Donchian unidad HW (procesador)       Espino (bus)       4.0        12.0    10.0                0.33   10.00          90%
+      Donchian unidad HW (unidad)    Unidad Donchian     750.0       500.0   502.0                1.50   37.35         100%
+                 Reversión mul SW             Espino     168.1         0.0   379.0                 inf   11.09          89%
+        Reversión mulc (custom-0)      Espino + mulc       2.9         0.0    36.0                 inf    2.02          16%
+               Reversión mul MMIO  Espino + mul MMIO      26.4        70.2    70.4                0.38    9.37          75%
+  (inf: el kernel no accede a memoria; no se puede ubicar en el roofline.)
 
 ======================================================================
 6. RECURSOS (desde reports/; generar con make pnr ...)
 ======================================================================
-                                   Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)            % LC  Fmax (MHz)
-                     Donchian ingenua (SW)      799       102         228    12          948             74%   43.5-46.5
-                  Donchian histograma (SW)      799       102         228    12          948             74%   43.5-46.5
-                        Donchian unidad HW      963       153         303    13         1139             89%   43.1-45.8
-              Donchian HW + compra inicial      963       153         303    13         1139             89%   43.1-45.8
-  Donchian HW + compra ini. + meta (final)      963       153         303    13         1139             89%   43.1-45.8
-                          Reversión mul SW      799       102         228    12          948             74%   43.5-46.5
-                 Reversión mulc (custom-0)      944       133         310    12         1095             86%   43.2-45.2
-                        Reversión mul MMIO     1006       133         374    12         1211             95%   39.9-43.9
-    Unidad HW v1 (histogramas, descartada)     1208       220           -    15         1478  115% (no cabe)           -
+                                   Versión  SB_LUT4  SB_CARRY  Flip-flops  BRAM  Celdas (LC)                  % LC  Fmax (MHz)
+                     Donchian ingenua (SW)      799       102         228    12          948                   74%   43.5-46.5
+                  Donchian histograma (SW)      799       102         228    12          948                   74%   43.5-46.5
+                        Donchian unidad HW      963       153         303    13         1139                   89%   43.1-45.8
+              Donchian HW + compra inicial      963       153         303    13         1139                   89%   43.1-45.8
+  Donchian HW + compra ini. + meta (final)      963       153         303    13         1139                   89%   43.1-45.8
+                          Reversión mul SW      799       102         228    12          948                   74%   43.5-46.5
+                 Reversión mulc (custom-0)      944       133         310    12         1095                   86%   43.2-45.2
+                        Reversión mul MMIO     1006       133         374    12         1211                   95%   39.9-43.9
+         Diseño base sin reducción de área     1024       195         330    12         1196                   93%       46.11
+    Unidad HW v1 (histogramas, descartada)     1189       220         412    15         1449  113% (falla nextpnr)           -
+                      Con PLL (descartado)      799       102         228    12            -         falla nextpnr           -

@@ -3,17 +3,13 @@
 \begin{axis}[
   xmode=log, ymode=log,
   xlabel={Intensidad operacional (ops/byte)}, ylabel={Rendimiento (ops/s)},
-  title={Roofline del Espino: kernel de multiplicación (estrategia anterior)}, legend pos=north west, legend style={font=\tiny},
-  xmin=0.01, xmax=1000, ymin=1e4, ymax=1e9, grid=both,
-  width=\linewidth, height=7cm]
+  title={Roofline del Espino: kernel de multiplicación (estrategia anterior)}, legend pos=south east, legend style={font=\tiny},
+  xmin=0.01, xmax=100, ymin=1e+05, ymax=1e+08, grid=both,
+  width=\linewidth, height=6.5cm]
 \addplot[thick, black, domain=0.01:0.375, samples=2] {3.33333e+07*x};
-\addplot[thick, black, domain=0.375:1000, samples=2, forget plot] {1.25e+07};
+\addplot[thick, black, domain=0.375:100, samples=2, forget plot] {1.25e+07};
 \addlegendentry{Techo del Espino}
-\addplot[only marks, mark=*, mark size=2.5pt] coordinates {(333.333,190981)};
-\addlegendentry{Reversión mul SW (sin accesos a memoria)}
-\addplot[only marks, mark=square*, mark size=2.5pt] coordinates {(666.667,2.00991e+06)};
-\addlegendentry{Reversión mulc (custom-0) (sin accesos a memoria)}
-\addplot[only marks, mark=triangle*, mark size=2.5pt] coordinates {(0.0412604,1.02853e+06)};
+\addplot[only marks, mark=*, mark size=2.5pt] coordinates {(0.375724,9.36598e+06)};
 \addlegendentry{Reversión mul MMIO}
 \end{axis}
 \end{tikzpicture}

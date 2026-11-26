@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Genera sw/trade.s, sw/trade_mulc.s y sw/trade_mmio.s desde una sola plantilla.
+Genera sw/trade_reversion.s, sw/trade_mulc.s y sw/trade_mmio.s desde una sola plantilla.
 Las tres variantes tienen exactamente la misma lógica; solo cambia cómo se
 calcula un cuadrado (SQ):
-  - trade.s      : subrutina mul por software (sumas sucesivas, sin shifts)
+  - trade_reversion.s : subrutina mul por software (sumas sucesivas, sin shifts)
   - trade_mulc.s : instrucción custom-0 mulc            (MUL_MODE = 1)
   - trade_mmio.s : periférico MMIO en 0x8002_0000      (MUL_MODE = 2)
 Uso (desde pochoco_soc/):  python3 tools/gen_trade.py
@@ -226,7 +226,7 @@ def expandir(texto, variante):
 
 
 VARIANTES = {
-    "sw": dict(archivo="trade.s", titulo="version solo software", extra_hw=", sin mul/div/shifts",
+    "sw": dict(archivo="trade_reversion.s", titulo="version solo software", extra_hw=", sin mul/div/shifts",
                regs_extra="#   a0, t2 = usados por la subrutina mul;  ra = direccion de retorno\n",
                equ_extra="", init_extra="", display="", subrutina=SUB_SW),
     "mulc": dict(archivo="trade_mulc.s", titulo="variante instruccion custom-0",
